@@ -10,9 +10,9 @@
 // Respuesta: { ok: true, cost, carrier, service, deliveryEstimate }
 //         o: { ok: false, error }  → el frontend debe hacer fallback al estimado fijo por zona.
 
-const ENVIA_BASE = process.env.ENVIA_ENV === 'production'
-  ? 'https://api.envia.com'
-  : 'https://api-test.envia.com';
+const ENVIA_BASE = process.env.ENVIA_ENV === 'test'
+  ? 'https://api-test.envia.com'
+  : 'https://api.envia.com';
 
 // ─────────────────────────────────────────────────────────────
 // TODO (Mafer): reemplaza estos datos con la dirección real desde
@@ -111,6 +111,7 @@ exports.handler = async (event) => {
 
   const token = process.env.ENVIA_TOKEN;
   if (!token) {
+    console.error('[shipping-rate] ENVIA_TOKEN no configurado');
     return { statusCode: 500, body: JSON.stringify({ ok: false, error: 'ENVIA_TOKEN no configurado en el servidor' }) };
   }
 
@@ -118,23 +119,31 @@ exports.handler = async (event) => {
   try {
     body = JSON.parse(event.body || '{}');
   } catch {
+    console.error('[shipping-rate] Body inválido:', event.body);
     return { statusCode: 400, body: JSON.stringify({ ok: false, error: 'Body inválido' }) };
   }
 
   const { postalCode, cart } = body;
+  console.log('[shipping-rate] Request:', { postalCode, cart, envBase: ENVIA_BASE });
+
   if (!/^\d{5}$/.test(postalCode || '')) {
+    console.error('[shipping-rate] CP inválido:', postalCode);
     return { statusCode: 400, body: JSON.stringify({ ok: false, error: 'Código postal inválido' }) };
   }
   if (!cart || Object.keys(cart).length === 0) {
+    console.error('[shipping-rate] Carrito vacío');
     return { statusCode: 400, body: JSON.stringify({ ok: false, error: 'Carrito vacío' }) };
   }
 
   const packages = buildPackages(cart);
+  console.log('[shipping-rate] Packages:', JSON.stringify(packages));
 
   const location = await resolveLocation(postalCode);
   if (!location) {
+    console.error('[shipping-rate] No se pudo resolver ubicación para CP:', postalCode);
     return { statusCode: 200, body: JSON.stringify({ ok: false, error: 'Código postal no encontrado' }) };
   }
+  console.log('[shipping-rate] Location:', location);
 
   const destination = {
     name: 'Cliente Marea',
@@ -160,8 +169,17 @@ exports.handler = async (event) => {
         shipment: { type: 1, carrier }
       })
     })
-      .then((r) => r.json())
-      .catch(() => null)
+      .then(async (r) => {
+        const json = await r.json().catch(() => null);
+        if (!r.ok) {
+          console.error(`[shipping-rate] Envia respondió ${r.status} para carrier=${carrier}:`, JSON.stringify(json));
+        }
+        return json;
+      })
+      .catch((err) => {
+        console.error(`[shipping-rate] Fetch falló para carrier=${carrier}:`, err.message);
+        return null;
+      })
   );
 
   try {
@@ -172,10 +190,12 @@ exports.handler = async (event) => {
       .sort((a, b) => parseFloat(a.totalPrice) - parseFloat(b.totalPrice));
 
     if (rates.length === 0) {
+      console.error('[shipping-rate] Sin cotizaciones. Resultados crudos:', JSON.stringify(results));
       return { statusCode: 200, body: JSON.stringify({ ok: false, error: 'Sin cotizaciones disponibles para ese código postal' }) };
     }
 
     const best = rates[0];
+    console.log('[shipping-rate] Mejor cotización:', best);
     return {
       statusCode: 200,
       body: JSON.stringify({
@@ -189,6 +209,7 @@ exports.handler = async (event) => {
       })
     };
   } catch (err) {
+    console.error('[shipping-rate] Error inesperado:', err.message);
     return { statusCode: 500, body: JSON.stringify({ ok: false, error: 'Error consultando Envia.com' }) };
   }
 };

@@ -819,7 +819,7 @@ async function calculatePostalShipping(cp) {
     });
     const data = await res.json();
     if (data.ok) {
-      state.shippingInfo = { cost: data.cost, carrier: data.carrier, service: data.service, real: true };
+      state.shippingInfo = { cost: data.cost, carrier: data.carrier, service: data.service, deliveryEstimate: data.deliveryEstimate, real: true };
       state.cpStatus = 'ok';
       feedback.style.color = '#2e7d4f';
       feedback.textContent = `📦 ${data.carrier.toUpperCase()} — envío ${money(data.cost)}${data.deliveryEstimate ? ' · ' + data.deliveryEstimate : ''}`;
@@ -972,12 +972,12 @@ function updateWaLink() {
   msg += `\n🚚 Código postal: ${cp || '_______'}`;
   if (state.shippingInfo) {
     if (state.shippingInfo.real) {
-      msg += `\n📦 Envío (${state.shippingInfo.carrier.toUpperCase()}): ${money(state.shippingInfo.cost)} MXN`;
+      msg += `\n📦 Envío (${state.shippingInfo.carrier.toUpperCase()}): ${money(state.shippingInfo.cost)} MXN${state.shippingInfo.deliveryEstimate ? ` · ${state.shippingInfo.deliveryEstimate}` : ''}`;
     } else {
       msg += `\n📦 Envío estimado (${state.shippingInfo.municipio}, ${state.shippingInfo.estado}): ${money(state.shippingInfo.cost)} MXN`;
     }
   }
-  msg += `\n\nEntiendo que el costo de envío se calcula según mi ubicación y que mi pedido está sujeto a disponibilidad de inventario. ¿Me pueden compartir el costo final con envío y los métodos de pago (Mercado Pago o transferencia)? ✨`;
+  msg += `\n\nEntiendo que el costo de envío se calcula según mi ubicación y que mi pedido está sujeto a disponibilidad de inventario. ¿Me pueden compartir el costo final con envío y los métodos de pago (Mercado Pago y transferencia)? ✨`;
   waBtn.href = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
 }
 

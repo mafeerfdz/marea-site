@@ -38,7 +38,32 @@ const PACKAGE_SPECS = {
   pack4: { weight: 0.60, length: 20, width: 18, height: 8 }
 };
 
-const CARRIERS_TO_QUOTE = ['estafeta', 'fedex', 'dhl'];
+// Paqueterías a comparar — se descubren dinámicamente desde tu cuenta de Envia (ver getActiveCarriers).
+// Este respaldo solo se usa si esa consulta llega a fallar.
+const FALLBACK_CARRIERS = ['estafeta', 'fedex', 'dhl', 'ups', 'paquetexpress', 'ampm', 'afimex'];
+
+async function getActiveCarriers(token) {
+  try {
+    const res = await fetch('https://queries.envia.com/carrier?country_code=MX', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!res.ok) {
+      console.error('[shipping-rate] No se pudo obtener lista de paqueterías, status:', res.status);
+      return FALLBACK_CARRIERS;
+    }
+    const data = await res.json();
+    const active = (data.data || []).filter((c) => c.active).map((c) => c.name);
+    if (active.length === 0) {
+      console.error('[shipping-rate] La cuenta no devolvió paqueterías activas, usando respaldo');
+      return FALLBACK_CARRIERS;
+    }
+    console.log('[shipping-rate] Paqueterías activas encontradas:', active);
+    return active;
+  } catch (err) {
+    console.error('[shipping-rate] Error consultando paqueterías activas:', err.message);
+    return FALLBACK_CARRIERS;
+  }
+}
 
 // Mapeo de nombre de estado (como lo devuelve la API de códigos postales) a código de 2-3 letras que pide Envia.
 const MX_STATE_CODES = {
@@ -138,6 +163,8 @@ exports.handler = async (event) => {
   const packages = buildPackages(cart);
   console.log('[shipping-rate] Packages:', JSON.stringify(packages));
 
+  const carriersToQuote = await getActiveCarriers(token);
+
   const location = await resolveLocation(postalCode);
   if (!location) {
     console.error('[shipping-rate] No se pudo resolver ubicación para CP:', postalCode);
@@ -155,7 +182,7 @@ exports.handler = async (event) => {
     postalCode
   };
 
-  const ratePromises = CARRIERS_TO_QUOTE.map((carrier) =>
+  const ratePromises = carriersToQuote.map((carrier) =>
     fetch(`${ENVIA_BASE}/ship/rate/`, {
       method: 'POST',
       headers: {

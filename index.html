@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Marea — Grip Socks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FFFDF5;
+    --text: #5D0C0C;
+    --wine: #5D0C0C;
+    --wine-dark: #3D0808;
+    --rose: #A67A8A;
+    --line: rgba(166,122,138,0.35);
+    --card-bg: #FFFFFF;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: 'DM Sans', Arial, sans-serif;
+    background: var(--cream);
+    color: var(--text);
+  }
+  h1, h2, h3, .serif {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+  }
+  a { color: inherit; }
+  img { max-width: 100%; display: block; }
+
+  /* ---------- Header ---------- */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(250,248,245,0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+  }
+  .header-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 20px;
+  }
+  .nav-links { display: flex; gap: 18px; font-size: 14px; font-weight: 600; }
+  .nav-links a { text-decoration: none; }
+  .logo-header img { height: 52px; }
+  .header-right {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #25D366; color: #fff !important; font-size: 13px; font-weight: 700;
+    padding: 9px 16px; border-radius: 20px; letter-spacing: 0.2px;
+    transition: background 0.2s;
+  }
+  .header-right:hover { background: #1DA851; }
+  .header-right svg { width: 15px; height: 15px; fill: #fff; }
+
+  .menu-toggle {
+    display: none; background: none; border: none; cursor: pointer;
+    padding: 6px; position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+  }
+  .menu-toggle span {
+    display: block; width: 22px; height: 2px; background: var(--wine);
+    margin: 5px 0; transition: 0.25s;
+  }
+  .menu-toggle.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .menu-toggle.open span:nth-child(2) { opacity: 0; }
+  .menu-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  .mobile-nav {
+    max-height: 0; overflow: hidden; background: var(--cream);
+    border-bottom: 1px solid var(--line); transition: max-height 0.3s ease;
+  }
+  .mobile-nav.open { max-height: 320px; }
+  .mobile-nav a {
+    display: block; padding: 14px 24px; font-size: 15px; font-weight: 600;
+    color: var(--wine); text-decoration: none; border-top: 1px solid var(--line);
+  }
+  .mobile-nav a:first-child { border-top: none; }
+
+  @media (max-width: 700px) {
+    .menu-toggle { display: block; }
+  }
+  @media (max-width: 700px) {
+    .nav-links { display: none; }
+    .header-inner { justify-content: center; position: relative; }
+    .header-right { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-size: 11.5px; padding: 7px 12px; }
+    .logo-header img { height: 28px; }
+  }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    display: grid; grid-template-columns: 1fr 1fr; align-items: center;
+    max-width: 1200px; margin: 0 auto; padding: 60px 20px;
+    gap: 40px;
+  }
+  .hero-text .eyebrow {
+    font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--wine); font-weight: 600; margin-bottom: 14px;
+  }
+  .hero-text h1 { font-size: 68px; font-weight: 500; line-height: 1.08; margin: 0 0 20px; }
+  .hero-text p { font-size: 18px; line-height: 1.6; color: var(--rose); max-width: 420px; margin-bottom: 22px; }
+  .btn-primary {
+    display: inline-block; background: var(--wine); color: #fff;
+    padding: 18px 42px; border-radius: 9px; text-decoration: none;
+    font-weight: 700; font-size: 14.5px; letter-spacing: 1.2px;
+    transition: background 0.25s, transform 0.25s, box-shadow 0.25s; text-transform: uppercase;
+    box-shadow: 0 8px 20px rgba(93,12,12,0.28);
+  }
+  .btn-primary:hover { background: var(--wine-dark); transform: translateY(-2px); box-shadow: 0 10px 24px rgba(93,12,12,0.34); }
+  .btn-primary.btn-hero { padding: 21px 42px; }
+  .hero-purchase-info {
+    display: flex; flex-wrap: wrap; gap: 16px; margin-top: 14px;
+    font-size: 12.5px; color: var(--rose); font-weight: 500;
+  }
+  .hero-purchase-info span { display: inline-flex; align-items: center; gap: 5px; }
+  .btn-secondary {
+    display: inline-block; padding: 17px 28px; border-radius: 9px;
+    text-decoration: none; font-weight: 600; font-size: 13.5px;
+    color: var(--wine); border: 1.5px solid var(--wine); margin-left: 12px;
+    letter-spacing: 0.3px; background: transparent;
+  }
+  .hero-img img { border-radius: 18px; width: 100%; object-fit: cover; aspect-ratio: 4/5; }
+  .hero-benefits { display: flex; gap: 22px; margin-bottom: 26px; flex-wrap: wrap; }
+  .hero-benefit { display: flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 600; color: var(--wine); }
+
+  @media (max-width: 800px) {
+    .hero { grid-template-columns: 1fr; padding: 20px 20px 30px; gap: 20px; }
+    .hero-img { order: -1; }
+    .hero-img img { aspect-ratio: 4/5; }
+    .hero-text h1 { font-size: 42px; }
+    .hero-text p { font-size: 15px; margin-bottom: 16px; }
+    .hero-benefits { gap: 14px; margin-bottom: 18px; }
+    .btn-secondary { margin-left: 0; margin-top: 10px; display: block; text-align: center; }
+    .btn-primary { display: block; text-align: center; }
+  }
+
+  /* ---------- Benefits ---------- */
+  .benefits {
+    background: #F3ECE6; padding: 115px 20px;
+  }
+  .benefits-grid {
+    max-width: 1100px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 36px;
+    text-align: center;
+  }
+  .benefits .section-title h2 { font-size: 40px; }
+  .benefits-grid .icon { margin-bottom: 14px; }
+  .benefits-grid h3 { font-size: 19px; font-weight: 600; font-family: 'Cormorant Garamond', serif; letter-spacing: 0.2px; margin: 0 0 8px; color: var(--wine); }
+  .benefits-grid p { font-size: 14.5px; color: var(--rose); margin: 0; line-height: 1.55; }
+  @media (max-width: 700px) {
+    .benefits-grid { grid-template-columns: 1fr 1fr; gap: 30px 16px; }
+  }
+
+  /* ---------- Section titles ---------- */
+  .section-title { text-align: center; margin: 0 auto 40px; }
+  .section-title .eyebrow {
+    font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--wine); font-weight: 600; margin-bottom: 10px;
+  }
+  .section-title h2 { font-size: 34px; font-weight: 500; margin: 0; }
+  .section-title .rule { width: 40px; height: 2px; background: var(--wine); margin: 14px auto 0; }
+  .section-title .section-sub { font-size: 15px; color: var(--rose); margin: 16px auto 0; max-width: 480px; }
+
+  /* ---------- Find Your Marea ---------- */
+  .find-marea {
+    display: grid; grid-template-columns: 1fr 1fr; align-items: center;
+    max-width: 1200px; margin: 0 auto; padding: 100px 20px;
+    gap: 60px;
+  }
+  .find-marea-text .eyebrow {
+    font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--wine); font-weight: 600; margin-bottom: 16px;
+  }
+  .find-marea-text h2 { font-size: 46px; font-weight: 500; line-height: 1.1; margin: 0 0 22px; }
+  .find-marea-text p { font-size: 16px; line-height: 1.7; color: var(--rose); max-width: 420px; margin-bottom: 30px; }
+  .find-marea-img img { border-radius: 18px; width: 100%; object-fit: cover; aspect-ratio: 4/3; }
+  @media (max-width: 800px) {
+    .find-marea { grid-template-columns: 1fr; padding: 70px 20px; gap: 34px; }
+    .find-marea-img { order: -1; }
+    .find-marea-text h2 { font-size: 36px; }
+  }
+
+  /* ---------- Colección ---------- */
+  .coleccion { max-width: 1100px; margin: 0 auto; padding: 110px 20px 40px; }
+  .coleccion-intro { max-width: 640px; margin: 0 auto 40px; text-align: center; }
+  .coleccion-intro p { font-size: 15px; line-height: 1.7; color: var(--rose); }
+  .coleccion-intro strong { color: var(--wine); font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; }
+  .product-grid {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 22px;
+  }
+  .product-grid .p-card { flex: 0 1 240px; max-width: 240px; }
+  .p-card {
+    background: var(--card-bg); border: 1px solid var(--line);
+    border-radius: 16px; overflow: hidden;
+    box-shadow: 0 2px 10px rgba(90,50,50,0.04);
+    transition: box-shadow 0.25s, transform 0.25s;
+    cursor: pointer;
+  }
+  .p-card:hover { box-shadow: 0 12px 24px rgba(90,50,50,0.10); transform: translateY(-3px); }
+  .p-card .img-wrap { overflow: hidden; }
+  .p-card img { aspect-ratio: 4/5; object-fit: cover; width: 100%; transition: transform 0.28s ease; }
+  .p-card:hover img { transform: scale(1.04); }
+  .p-card .p-body { padding: 16px 16px 20px; text-align: center; }
+  .p-card .p-name { font-size: 15px; font-weight: 500; margin-bottom: 6px; min-height: 40px; }
+  .p-card .p-tagline { font-size: 12px; color: var(--rose); line-height: 1.45; margin-bottom: 10px; min-height: 48px; }
+  .p-card .p-price { font-size: 15px; font-weight: 700; color: var(--wine); margin-bottom: 14px; }
+  .p-card .p-btn {
+    display: block; width: 100%; padding: 11px; border-radius: 8px;
+    background: var(--wine); border: 1.5px solid var(--wine); color: #fff;
+    font-weight: 700; font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
+  }
+  .p-card .p-btn:hover { background: var(--wine-dark); }
+  .p-card.pack .p-name { min-height: auto; }
+  .p-card.in-cart { border-color: var(--wine); box-shadow: 0 4px 16px rgba(93,12,12,0.10); }
+  .p-card .p-qty-stepper {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--wine); border-radius: 8px; padding: 6px 8px;
+  }
+  .p-card .p-qty-stepper button {
+    background: none; border: none; color: #fff; font-size: 16px;
+    width: 26px; height: 26px; cursor: pointer; font-weight: 700;
+  }
+  .p-card .p-qty-stepper .p-qty-val { color: #fff; font-weight: 700; font-size: 13px; }
+  .p-card .p-in-cart-note { font-size: 10.5px; color: #2e7d4f; font-weight: 700; margin-top: 6px; text-align: center; }
+  .badge-ship {
+    display: inline-block; font-size: 11px; font-weight: 700; color: #2e7d4f;
+    background: #e6f4ea; padding: 3px 10px; border-radius: 20px; margin-bottom: 8px;
+  }
+  @media (max-width: 800px) {
+    .product-grid .p-card { flex: 0 1 45%; max-width: 45%; }
+  }
+
+  .ver-todos { text-align: center; margin: 34px 0 0; }
+  .ver-todos a {
+    display: inline-block; border: 1.5px solid var(--text); border-radius: 8px;
+    padding: 12px 24px; font-size: 13px; font-weight: 600; letter-spacing: 0.5px;
+    text-decoration: none;
+  }
+
+  /* ---------- Checkout panel ---------- */
+  .checkout {
+    max-width: 480px; margin: 60px auto 0; padding: 0 20px 90px;
+  }
+  .checkout-box {
+    background: var(--card-bg); border: 1px solid var(--line); border-radius: 18px;
+    padding: 28px; box-shadow: 0 4px 20px rgba(90,50,50,0.05);
+  }
+  .checkout-box h3 { font-size: 22px; margin: 0 0 4px; }
+  .checkout-box .sub { font-size: 13px; color: var(--rose); margin-bottom: 22px; }
+  .row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .qty-controls {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--cream); border: 1px solid var(--line); border-radius: 10px; padding: 6px 10px;
+  }
+  .qty-controls button { background: none; border: none; color: var(--wine); font-size: 18px; width: 24px; cursor: pointer; }
+  label { font-size: 13px; color: var(--rose); display: block; margin-bottom: 6px; }
+  input[type="text"] {
+    width: 100%; padding: 12px 14px; border-radius: 10px;
+    border: 1px solid var(--line); background: var(--cream);
+    color: var(--text); font-size: 14px; text-transform: uppercase;
+    font-family: 'DM Sans';
+  }
+  input[type="text"]::placeholder { color: var(--rose); text-transform: none; }
+  .summary { background: var(--cream); border-radius: 12px; padding: 16px 18px; margin: 18px 0; font-size: 13px; }
+  .summary .line2 { display: flex; justify-content: space-between; margin-bottom: 6px; }
+  .summary .total { font-size: 17px; font-weight: 700; border-top: 1px solid var(--line); padding-top: 8px; margin-top: 8px; color: var(--wine); }
+  .summary .note { color: var(--wine); font-size: 11px; margin-top: 8px; }
+  .cart-empty {
+    text-align: center; font-size: 13px; color: var(--rose);
+    padding: 22px 10px; border: 1.5px dashed var(--line); border-radius: 12px; margin-bottom: 18px;
+  }
+  .cart-item {
+    display: grid; grid-template-columns: 46px 1fr auto; gap: 12px; align-items: center;
+    padding: 12px 0; border-bottom: 1px solid var(--line);
+  }
+  .cart-item:last-child { border-bottom: none; }
+  .cart-item img { width: 46px; height: 46px; border-radius: 8px; object-fit: cover; }
+  .cart-item-name { font-size: 13px; font-weight: 600; line-height: 1.3; }
+  .cart-item-price { font-size: 11.5px; color: var(--rose); }
+  .cart-item-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+  .cart-item-subtotal { font-size: 13px; font-weight: 700; color: var(--wine); }
+  .cart-qty-controls { display: flex; align-items: center; gap: 8px; }
+  .cart-qty-controls button {
+    background: var(--cream); border: 1px solid var(--line); border-radius: 6px;
+    color: var(--wine); width: 22px; height: 22px; font-size: 14px; cursor: pointer; line-height: 1;
+  }
+  .cart-qty-controls .cart-qty-val { font-size: 12.5px; font-weight: 600; min-width: 14px; text-align: center; }
+  .cart-item-remove {
+    background: none; border: none; color: var(--rose); font-size: 11px;
+    cursor: pointer; text-decoration: underline; padding: 0;
+  }
+  .cart-items-list { margin-bottom: 6px; }
+  .floating-cart {
+    position: fixed; bottom: 22px; right: 22px; z-index: 500;
+    background: var(--wine); color: #fff; border-radius: 30px;
+    padding: 13px 20px; display: none; align-items: center; gap: 10px;
+    box-shadow: 0 8px 24px rgba(93,12,12,0.3); cursor: pointer;
+    font-size: 13px; font-weight: 700; border: none;
+  }
+  .floating-cart.show { display: flex; }
+  .floating-cart .fc-count {
+    background: #fff; color: var(--wine); border-radius: 50%;
+    width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800;
+  }
+  @media (max-width: 800px) {
+    .floating-cart { bottom: 16px; right: 16px; padding: 11px 16px; font-size: 12px; }
+  }
+  .wa-inline {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; background: #25D366; color: #fff; border: none;
+    padding: 15px; border-radius: 10px; font-size: 15px; font-weight: 700;
+    text-decoration: none; margin-top: 6px; font-family: 'DM Sans';
+  }
+  .wa-inline svg { width: 20px; height: 20px; fill: #fff; }
+  .quick-checklist { list-style: none; padding: 0; margin: 0 0 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px 10px; }
+  .quick-checklist li { font-size: 12px; font-weight: 600; color: var(--wine); position: relative; padding-left: 18px; }
+  .quick-checklist li::before { content: '✔'; position: absolute; left: 0; color: #2e7d4f; font-size: 11px; }
+  .footer-note-cta { text-align: center; font-size: 12px; font-weight: 600; color: var(--wine); margin-top: 12px; }
+
+  /* ---------- Historia ---------- */
+  .historia {
+    max-width: 1100px; margin: 0 auto; padding: 85px 20px 130px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center;
+  }
+  .historia img { border-radius: 18px; aspect-ratio: 4/5; object-fit: cover; }
+  .historia .eyebrow { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--wine); font-weight: 600; margin-bottom: 12px; }
+  .historia h2 { font-size: 32px; font-weight: 500; line-height: 1.25; margin: 0 0 18px; }
+  .historia p { font-size: 15px; line-height: 1.7; color: var(--rose); }
+  @media (max-width: 800px) {
+    .historia { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- Reviews ---------- */
+  .reviews { background: #F3ECE6; padding: 110px 20px; }
+  .reviews-grid {
+    max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(3,1fr); gap: 30px;
+  }
+  .review-card { text-align: center; }
+  .stars { color: var(--wine); font-size: 16px; margin-bottom: 12px; letter-spacing: 2px; }
+  .review-card p.quote { font-size: 14px; line-height: 1.6; color: var(--rose); font-style: italic; margin-bottom: 12px; }
+  .review-card .author { font-size: 13px; font-weight: 700; color: var(--wine); }
+  @media (max-width: 700px) {
+    .reviews-grid { grid-template-columns: 1fr; gap: 40px; }
+  }
+
+  /* ---------- Estudios aliados ---------- */
+  .aliados { max-width: 1100px; margin: 0 auto; padding: 110px 20px 110px; }
+  .aliados-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; }
+  .aliado-card {
+    flex: 0 1 340px; max-width: 340px; background: var(--card-bg);
+    border: 1px solid var(--line); border-radius: 16px; overflow: hidden;
+    box-shadow: 0 2px 10px rgba(90,50,50,0.04); display: flex; flex-direction: column;
+  }
+  .aliado-media { aspect-ratio: 4/3; overflow: hidden; }
+  .aliado-media img { width: 100%; height: 100%; object-fit: cover; }
+  .aliado-media-logo-only { background: var(--cream); display: flex; align-items: center; justify-content: center; padding: 30px; }
+  .aliado-media-logo-only img { width: auto; height: auto; max-height: 90px; max-width: 75%; object-fit: contain; }
+  .aliado-info { padding: 20px 22px 24px; text-align: center; flex: 1; display: flex; flex-direction: column; align-items: center; }
+  .aliado-logo { margin-bottom: 12px; }
+  .aliado-logo img { max-height: 58px; width: auto; }
+  .aliado-name { font-family: 'Cormorant Garamond', serif; font-size: 21px; font-weight: 600; color: var(--wine); margin-bottom: 8px; }
+  .aliado-address { font-size: 12.5px; color: var(--rose); line-height: 1.5; margin-bottom: 18px; }
+  .aliado-btn { margin: 0 !important; padding: 11px 22px !important; font-size: 12px !important; }
+  .aliados-cta { text-align: center; margin: 46px 0 0; }
+
+  /* ---------- Instagram gallery ---------- */
+  .instagram { max-width: 1100px; margin: 0 auto; padding: 115px 20px; }
+  .ig-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .ig-grid a { display: block; overflow: hidden; border-radius: 6px; }
+  .ig-grid img { aspect-ratio: 1/1; object-fit: cover; transition: transform 0.3s; }
+  .ig-grid a:hover img { transform: scale(1.08); }
+  @media (max-width: 700px) {
+    .ig-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* ---------- Footer ---------- */
+  footer { background: var(--wine-dark); color: #f1e6e2; padding: 85px 20px 30px; }
+  .footer-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 30px; }
+  footer .f-logo { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; color: #fff; margin-bottom: 10px; }
+  footer p { font-size: 13px; color: #E9CFCF; line-height: 1.6; }
+  footer h4 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #fff; margin: 0 0 14px; }
+  footer ul { list-style: none; padding: 0; margin: 0; }
+  footer li { margin-bottom: 8px; }
+  footer a { font-size: 13px; color: #E9CFCF; text-decoration: none; }
+  .footer-bottom {
+    max-width: 1100px; margin: 40px auto 0; padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.15); font-size: 12px; color: #D9B3AE; text-align: center;
+  }
+  @media (max-width: 700px) {
+    .footer-inner { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="left nav-links">
+      <a href="#inicio">Inicio</a>
+      <a href="#coleccion">Colección</a>
+      <a href="#encuentra-tu-marea">Encuentra tu Marea</a>
+      <a href="#estudios">Club Marea</a>
+      <a href="#historia">Sobre Marea</a>
+    </nav>
+    <div class="logo-header"><img src="images/logo.png" alt="Marea" /></div>
+    <a href="#" id="headerWa" class="header-right" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12c0 1.85.5 3.58 1.38 5.07L2 22l5.07-1.33A9.96 9.96 0 0012 22c5.5 0 10-4.5 10-10S17.5 2 12 2zm5.2 14.2c-.22.62-1.28 1.2-1.77 1.27-.45.07-.9.1-1.6-.1-3.68-1.02-6.1-3.44-6.3-3.7-.2-.27-1.4-1.86-1.4-3.54s.87-2.5 1.18-2.85c.3-.34.66-.42.88-.42h.63c.2 0 .47-.04.73.56.27.62.9 2.1.97 2.25.08.15.13.33.02.53-.1.2-.16.32-.32.5-.16.18-.33.4-.47.53-.16.15-.32.32-.14.63.18.32.8 1.32 1.72 2.13 1.18 1.05 2.18 1.38 2.5 1.53.32.15.5.13.68-.05.2-.2.8-.93 1-1.25.2-.32.4-.27.67-.16.27.1 1.7.8 2 .95.3.15.5.22.57.35.08.14.08.78-.14 1.4z"/></svg>
+      WhatsApp
+    </a>
+  </div>
+  <nav class="mobile-nav" id="mobileNav">
+    <a href="#inicio">Inicio</a>
+    <a href="#coleccion">Colección</a>
+    <a href="#encuentra-tu-marea">Encuentra tu Marea</a>
+    <a href="#estudios">Club Marea</a>
+    <a href="#historia">Sobre Marea</a>
+  </nav>
+</header>
+
+<section class="hero" id="inicio">
+  <div class="hero-text">
+    <div class="eyebrow">Grip Socks · México</div>
+    <h1>More than<br/>Grip Socks.</h1>
+    <p>Cada práctica es un momento para volver a ti. Diseñamos grip socks que combinan estabilidad, comodidad y diseño para acompañarte en cada movimiento.</p>
+    <div class="hero-benefits">
+      <div class="hero-benefit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5D0C0C" stroke-width="1.6"><path d="M4 20l4-10 4 6 4-8 4 12"/></svg><span>Antiderrapantes</span></div>
+      <div class="hero-benefit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5D0C0C" stroke-width="1.6"><path d="M6 17a4 4 0 010-8 5 5 0 019.5-2A4.5 4.5 0 0119 17H6z"/></svg><span>Algodón premium</span></div>
+      <div class="hero-benefit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5D0C0C" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M9 12h6"/></svg><span>Unitalla</span></div>
+    </div>
+    <a href="#coleccion" class="btn-primary btn-hero">Comprar ahora</a>
+    <a href="#historia" class="btn-secondary">Nuestra historia</a>
+    <div class="hero-purchase-info">
+      <span>🚚 Envíos a todo México</span>
+      <span>🔒 Pago seguro</span>
+      <span>💳 Tarjeta, Mercado Pago y transferencia</span>
+    </div>
+  </div>
+  <div class="hero-img">
+    <img src="images/hero.jpg" alt="Marea grip socks en movimiento" />
+  </div>
+</section>
+
+
+
+<section class="coleccion" id="coleccion">
+  <div class="section-title">
+    <div class="eyebrow">The First Wave</div>
+    <h2>La colección</h2>
+    <div class="rule"></div>
+  </div>
+  <div class="coleccion-intro">
+    <p><strong>First Wave</strong> — Nuestra primera colección. Cuatro diseños. Cuatro energías. Cuatro maneras de conectar contigo. First Wave nace para recordarte que cada clase empieza con una intención diferente. Encuentra la tuya.</p>
+  </div>
+  <div class="product-grid" id="productGrid"></div>
+  <div class="ver-todos"><a href="#coleccion">Ver todos los diseños</a></div>
+
+  <div class="checkout" id="checkout">
+    <div class="checkout-box">
+      <h3>Tu pedido</h3>
+      <div class="sub">Agrega los modelos que quieras — confirmamos el pago por WhatsApp.</div>
+
+      <div class="cart-items-list" id="cartItems"></div>
+      <div class="cart-empty" id="cartEmpty">Aún no has agregado productos. Elige tus modelos favoritos arriba ↑</div>
+
+      <div id="cartDiscountSection" style="display:none;">
+        <label for="code">Código de descuento (opcional)</label>
+        <input type="text" id="code" placeholder="Ej. MARIA10" />
+        <div id="codeFeedback" style="font-size:12px; margin-top:6px; min-height:14px;"></div>
+        <div style="font-size:11px; color:var(--rose); margin-top:2px; line-height:1.4;">10% OFF en modelos individuales. No aplica en el Pack de 4 pares, ni es acumulable con otras promociones.</div>
+      </div>
+
+      <div id="cpSection" style="display:none; margin-top:16px;">
+        <label for="cp">Código postal (para estimar tu envío)</label>
+        <input type="text" id="cp" inputmode="numeric" maxlength="5" placeholder="Ej. 55000" />
+        <div id="cpFeedback" style="font-size:12px; margin-top:6px; min-height:14px;"></div>
+      </div>
+
+      <div class="summary" id="cartSummary" style="display:none;">
+        <div class="line2"><span>Subtotal</span><span id="cartSubtotal">$0</span></div>
+        <div class="line2" id="discountRow" style="display:none; color:#2e7d4f; font-weight:700;"><span>Descuento</span><span id="prodDiscount">-$0</span></div>
+        <div class="line2"><span>Envío</span><span id="prodShipping">Ingresa tu código postal ↑</span></div>
+        <div class="line2 total"><span>Total aprox.</span><span id="prodTotal">$0</span></div>
+        <div class="note" id="totalNote">El envío final y el link de pago te los confirmamos por WhatsApp.</div>
+      </div>
+
+      <ul class="quick-checklist">
+        <li>Antiderrapantes</li>
+        <li>Unitalla</li>
+        <li>Algodón premium</li>
+        <li>Perfectos para Pilates, Barre y Yoga</li>
+        <li>Diseñados en México</li>
+        <li>First Wave Collection</li>
+      </ul>
+
+      <a class="wa-inline" id="waBuy" href="#" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12c0 1.85.5 3.58 1.38 5.07L2 22l5.07-1.33A9.96 9.96 0 0012 22c5.5 0 10-4.5 10-10S17.5 2 12 2zm5.2 14.2c-.22.62-1.28 1.2-1.77 1.27-.45.07-.9.1-1.6-.1-3.68-1.02-6.1-3.44-6.3-3.7-.2-.27-1.4-1.86-1.4-3.54s.87-2.5 1.18-2.85c.3-.34.66-.42.88-.42h.63c.2 0 .47-.04.73.56.27.62.9 2.1.97 2.25.08.15.13.33.02.53-.1.2-.16.32-.32.5-.16.18-.33.4-.47.53-.16.15-.32.32-.14.63.18.32.8 1.32 1.72 2.13 1.18 1.05 2.18 1.38 2.5 1.53.32.15.5.13.68-.05.2-.2.8-.93 1-1.25.2-.32.4-.27.67-.16.27.1 1.7.8 2 .95.3.15.5.22.57.35.08.14.08.78-.14 1.4z"/></svg>
+        Comprar por WhatsApp
+      </a>
+      <div class="footer-note-cta">Te confirmamos los métodos de pago vía WhatsApp</div>
+    </div>
+  </div>
+</section>
+
+<button class="floating-cart" id="floatingCart">
+  <span>🛍️ Ver mi pedido</span>
+  <span class="fc-count" id="fcCount">0</span>
+</button>
+
+<section class="benefits" id="beneficios">
+  <div class="section-title">
+    <div class="eyebrow">Get a Grip</div>
+    <h2>¿Por qué Marea?</h2>
+    <div class="rule"></div>
+  </div>
+  <div class="benefits-grid">
+    <div>
+      <div class="icon"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#5D0C0C" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></div>
+      <h3>Full Grip</h3>
+      <p>Silicón antiderrapante de alta adherencia para mayor estabilidad.</p>
+    </div>
+    <div>
+      <div class="icon"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#5D0C0C" stroke-width="1.4"><path d="M6 17a4 4 0 010-8 5 5 0 019.5-2A4.5 4.5 0 0119 17H6z"/></svg></div>
+      <h3>Algodón Premium</h3>
+      <p>Suaves, cómodos y transpirables para acompañarte durante toda tu práctica.</p>
+    </div>
+    <div>
+      <div class="icon"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#5D0C0C" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><path d="M9 12h6"/></svg></div>
+      <h3>Unitalla</h3>
+      <p>Diseñados para ajustarse cómodamente a la mayoría de las tallas gracias a su tejido elástico y ajuste ergonómico.</p>
+    </div>
+    <div>
+      <div class="icon"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#5D0C0C" stroke-width="1.4"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"/></svg></div>
+      <h3>Diseñados en México</h3>
+      <p>Cada colección está creada con intención para inspirarte en cada movimiento.</p>
+    </div>
+  </div>
+</section>
+
+<section class="find-marea" id="encuentra-tu-marea">
+  <div class="find-marea-text">
+    <div class="eyebrow">Diseñados en México</div>
+    <h2>Encuentra tu<br/>Marea.</h2>
+    <p>No existe una sola manera de moverte. Cada diseño de Marea representa una energía distinta para acompañarte dentro y fuera del estudio. Encuentra la que conecta contigo.</p>
+    <a href="#coleccion" class="btn-primary">ENCUENTRA TU MAREA</a>
+  </div>
+  <div class="find-marea-img">
+    <img src="images/find-marea.jpg" alt="Marea Pilates & Latte grip socks" />
+  </div>
+</section>
+
+
+
+<section class="historia" id="historia">
+  <img src="images/historia.jpg" alt="Más que grip socks" />
+  <div>
+    <div class="eyebrow">Nuestra historia</div>
+    <h2>Marea nació de una idea muy simple: creemos que el movimiento también puede inspirar.</h2>
+    <p>Creamos grip socks que van más allá de la funcionalidad. Cada diseño representa una energía distinta para acompañarte dentro y fuera del estudio.</p>
+    <p>Porque todos nos movemos diferente. Y todos tenemos una Marea distinta.</p>
+  </div>
+</section>
+
+<section class="reviews" id="marea-girls">
+  <div class="section-title">
+    <div class="eyebrow">Testimonios</div>
+    <h2>Marea Girls</h2>
+    <div class="rule"></div>
+  </div>
+  <div class="reviews-grid">
+    <div class="review-card">
+      <div class="stars">★★★★★</div>
+      <p class="quote">"Los mejores grip socks que he probado. Súper cómodos y el diseño está increíble."</p>
+      <div class="author">— Ale J.</div>
+    </div>
+    <div class="review-card">
+      <div class="stars">★★★★★</div>
+      <p class="quote">"Se sienten increíbles, no se resbalan y combinan con todo."</p>
+      <div class="author">— Jimena T.</div>
+    </div>
+    <div class="review-card">
+      <div class="stars">★★★★★</div>
+      <p class="quote">"Amo que son mexicanos y que la calidad es premium."</p>
+      <div class="author">— Mónica L.</div>
+    </div>
+  </div>
+</section>
+
+<section class="aliados" id="estudios">
+  <div class="section-title">
+    <div class="eyebrow">Club Marea</div>
+    <h2>📍 Encuentra Marea cerca de ti</h2>
+    <div class="rule"></div>
+    <p class="section-sub">Ya puedes encontrar Marea en nuestros estudios aliados. Seguimos creciendo para estar cada vez más cerca de ti.</p>
+  </div>
+  <div class="aliados-grid">
+    <div class="aliado-card">
+      <div class="aliado-media aliado-media-logo-only"><img src="images/logo-kalaa.jpg" alt="Kalaa Studio" /></div>
+      <div class="aliado-info">
+        <div class="aliado-name">Kalaa Studio</div>
+        <div class="aliado-address">📍 Ciudad Satélite, Naucalpan de Juárez, Estado de México</div>
+        <a class="btn-secondary aliado-btn" href="https://www.google.com/maps/search/?api=1&query=Cto.%20Circunvalaci%C3%B3n%20Pte.%20146%2C%20Local%2028%2C%20Ciudad%20Sat%C3%A9lite%2C%2053100%20Naucalpan%20de%20Ju%C3%A1rez%2C%20Estado%20de%20M%C3%A9xico" target="_blank">Ver ubicación</a>
+      </div>
+    </div>
+    <div class="aliado-card">
+      <div class="aliado-media aliado-media-logo-only"><img src="images/logo-xaram.jpg" alt="Xaram Pilates y Spa" /></div>
+      <div class="aliado-info">
+        <div class="aliado-name">Xaram Pilates &amp; Spa</div>
+        <div class="aliado-address">📍 Jardines de Santa Mónica, Tlalnepantla, Estado de México</div>
+        <a class="btn-secondary aliado-btn" href="https://www.google.com/maps/search/?api=1&query=Av.%20Convento%20de%20Santa%20M%C3%B3nica%20126%2C%20Jardines%20de%20Santa%20M%C3%B3nica%2C%2054059%20Tlalnepantla%2C%20Estado%20de%20M%C3%A9xico" target="_blank">Ver ubicación</a>
+      </div>
+    </div>
+  </div>
+  <div class="aliados-cta"><a href="#" id="waStudioPartner" class="btn-primary">QUIERO QUE MI ESTUDIO SEA ALIADO</a></div>
+</section>
+
+<section class="instagram" id="instagram">
+  <div class="section-title">
+    <div class="eyebrow"><a href="https://www.instagram.com/marea.socks?igsh=MXNxZm1pMTNibmFrOA==" target="_blank" style="text-decoration:none; color:inherit;">@marea.socks</a></div>
+    <h2>Síguenos en Instagram</h2>
+    <div class="rule"></div>
+    <p class="section-sub">Inspírate, muévete y encuentra tu Marea.</p>
+  </div>
+  <div class="ig-grid" id="igGrid"></div>
+</section>
+
+<footer id="contacto">
+  <div class="footer-inner">
+    <div>
+      <div class="f-logo">Marea.</div>
+      <p>Move with intention.<br/>Vive tu Marea.</p>
+    </div>
+    <div>
+      <h4>Navegación</h4>
+      <ul>
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#historia">Nuestra historia</a></li>
+        <li><a href="#coleccion">First Wave</a></li>
+        <li><a href="#estudios">Club Marea</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Ayuda</h4>
+      <ul>
+        <li><a href="#" id="waHelp3b">Preguntas frecuentes</a></li>
+        <li><a href="#" id="waHelp1">Envíos</a></li>
+        <li><a href="#" id="waHelp2">Cambios y devoluciones</a></li>
+        <li><a href="#" id="waStudioPartner2">¿Tu estudio quiere ser aliado?</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Síguenos</h4>
+      <ul>
+        <li><a href="https://www.instagram.com/marea.socks?igsh=MXNxZm1pMTNibmFrOA==" target="_blank">Instagram</a></li>
+        <li><a href="#" id="waHelp3">WhatsApp</a></li>
+        <li><a href="https://www.tiktok.com/@marea.socks" target="_blank">TikTok</a></li>
+      </ul>
+      <h4 style="margin-top:22px;">Legal</h4>
+      <ul>
+        <li><a href="#">Aviso de privacidad</a></li>
+        <li><a href="#">Términos y condiciones</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 Marea. Todos los derechos reservados.</div>
+</footer>
+
+<script>
+const WA_NUMBER = '525621385605';
+const SHIPPING_FEE = 99;
+
+const products = {
+  pilates: { title: 'Pilates & Latte', tagline: 'Para quienes encuentran felicidad en una clase y un café después. Una Marea ligera y auténtica.', unit_price: 249, image: 'images/design-pilates.jpg', shipping: SHIPPING_FEE },
+  pulse: { title: "Barre Girls Don't Shake, They Pulse", tagline: 'Barre girls don\u2019t shake. They pulse. Fuerza en la precisión y el control.', unit_price: 249, image: 'images/design-pulse.jpg', shipping: SHIPPING_FEE },
+  move: { title: 'Move with Intention', tagline: 'Cada gran cambio comienza con una intención. El progreso sucede un movimiento a la vez.', unit_price: 249, image: 'images/design-move.jpg', shipping: SHIPPING_FEE },
+  calm: { title: 'Strong Body, Calm Mind', tagline: 'El equilibrio entre disciplina, calma y bienestar. Poder en la serenidad.', unit_price: 249, image: 'images/design-calm.jpg', shipping: SHIPPING_FEE },
+  pack4: { title: 'Pack de 4 pares', tagline: 'Los cuatro diseños de la colección First Wave.', unit_price: 899, image: 'images/pack4.jpg', shipping: 0 }
+};
+
+// Códigos de descuento de influencers — 10% en diseños individuales, no aplica al pack de 4
+const discountCodes = {
+  REGINA10: 0.10,
+  ALESSANDRA10: 0.10,
+  PAULINA10: 0.10,
+  SHADIA10: 0.10,
+  MAJO10: 0.10,
+  DANIELA10: 0.10,
+  BARBIE10: 0.10,
+  ANDREA10: 0.10,
+  SOFIA10: 0.10
+};
+
+const state = { cart: {}, code: '', postalCode: '', shippingInfo: null, cpStatus: 'idle' };
+
+// Tarifas estimadas por zona — AJUSTAR según costos reales de paquetería. Envío gratis si el pedido incluye Pack de 4.
+const SHIPPING_ZONES = {
+  local: { estados: ['Ciudad de México', 'México'], cost: 79 },
+  nacional: { cost: 149 }
+};
+
+// Perfiles de paquete (peso/medidas) para configurar en Mercado Envíos, Skydropx, Estafeta, etc.
+// Todos caen en el rango de peso mínimo (0–1 kg) de la mayoría de paqueterías en México,
+// por eso el costo estimado no varía por cantidad — solo por zona (local/nacional).
+const PACKAGE_SPECS = {
+  1: { weight_kg: 0.15, largo_cm: 20, ancho_cm: 12, alto_cm: 4 },
+  2: { weight_kg: 0.30, largo_cm: 20, ancho_cm: 12, alto_cm: 6 },
+  3: { weight_kg: 0.45, largo_cm: 20, ancho_cm: 12, alto_cm: 8 },
+  pack4: { weight_kg: 0.60, largo_cm: 20, ancho_cm: 18, alto_cm: 8 }
+};
+
+function money(n) {
+  return '$' + Number(n).toLocaleString('es-MX', { minimumFractionDigits: 0 });
+}
+
+function cartCount() {
+  return Object.values(state.cart).reduce((a, b) => a + b, 0);
+}
+
+function renderProducts() {
+  const grid = document.getElementById('productGrid');
+  grid.innerHTML = '';
+  Object.entries(products).forEach(([id, p]) => {
+    const qty = state.cart[id] || 0;
+    const card = document.createElement('div');
+    card.className = 'p-card' + (id === 'pack4' ? ' pack' : '') + (qty > 0 ? ' in-cart' : '');
+    card.innerHTML = `
+      <div class="img-wrap"><img src="${p.image}" alt="${p.title}" /></div>
+      <div class="p-body">
+        ${p.shipping === 0 ? '<div class="badge-ship">Envío gratis</div>' : ''}
+        <div class="p-name">${p.title}</div>
+        <div class="p-tagline">${p.tagline}</div>
+        <div class="p-price">${money(p.unit_price)} MXN</div>
+        ${qty > 0 ? `
+          <div class="p-qty-stepper">
+            <button type="button" class="p-qty-minus" data-id="${id}">−</button>
+            <span class="p-qty-val">${qty} en tu pedido</span>
+            <button type="button" class="p-qty-plus" data-id="${id}">+</button>
+          </div>
+        ` : `<button class="p-btn" type="button" data-id="${id}">Agregar</button>`}
+      </div>
+    `;
+    if (qty > 0) {
+      card.querySelector('.p-qty-minus').onclick = (e) => { e.stopPropagation(); changeQty(id, -1); };
+      card.querySelector('.p-qty-plus').onclick = (e) => { e.stopPropagation(); changeQty(id, 1); };
+    } else {
+      card.querySelector('.p-btn').onclick = (e) => { e.stopPropagation(); changeQty(id, 1); };
+    }
+    grid.appendChild(card);
+  });
+}
+
+function changeQty(id, delta) {
+  const newQty = (state.cart[id] || 0) + delta;
+  if (newQty <= 0) delete state.cart[id];
+  else state.cart[id] = newQty;
+  renderProducts();
+  renderCart();
+}
+
+function removeFromCart(id) {
+  delete state.cart[id];
+  renderProducts();
+  renderCart();
+}
+
+function getEligibleSubtotal() {
+  return Object.entries(state.cart).reduce((sum, [id, qty]) => {
+    if (id === 'pack4') return sum;
+    return sum + products[id].unit_price * qty;
+  }, 0);
+}
+
+function getSubtotal() {
+  return Object.entries(state.cart).reduce((sum, [id, qty]) => sum + products[id].unit_price * qty, 0);
+}
+
+function hasPack4() {
+  return !!state.cart.pack4;
+}
+
+function getDiscount() {
+  const code = (state.code || '').trim().toUpperCase();
+  if (!code || !discountCodes[code]) return { valid: false, percent: 0, amount: 0 };
+  const eligible = getEligibleSubtotal();
+  if (eligible === 0) return { valid: 'noeligible', percent: 0, amount: 0 };
+  return { valid: true, percent: discountCodes[code], amount: Math.round(eligible * discountCodes[code]) };
+}
+
+function getShipping() {
+  if (cartCount() === 0) return { known: true, cost: 0, label: 'Gratis' };
+  if (hasPack4()) return { known: true, cost: 0, label: 'Gratis (Pack de 4)' };
+  if (state.shippingInfo) return { known: true, cost: state.shippingInfo.cost, label: money(state.shippingInfo.cost) };
+  return { known: false, cost: 0, label: 'Ingresa tu código postal ↑' };
+}
+
+async function calculatePostalShipping(cp) {
+  const feedback = document.getElementById('cpFeedback');
+  state.shippingInfo = null;
+  if (!/^\d{5}$/.test(cp)) {
+    state.cpStatus = 'idle';
+    feedback.textContent = '';
+    updateSummary();
+    return;
+  }
+  state.cpStatus = 'loading';
+  feedback.style.color = 'var(--rose)';
+  feedback.textContent = 'Calculando envío…';
+
+  // 1) Intenta cotización real con Envia.com (vía función de Netlify — requiere ENVIA_TOKEN configurado)
+  try {
+    const res = await fetch('/.netlify/functions/shipping-rate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ postalCode: cp, cart: state.cart })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      state.shippingInfo = { cost: data.cost, carrier: data.carrier, service: data.service, real: true };
+      state.cpStatus = 'ok';
+      feedback.style.color = '#2e7d4f';
+      feedback.textContent = `📦 ${data.carrier.toUpperCase()} — envío ${money(data.cost)}${data.deliveryEstimate ? ' · ' + data.deliveryEstimate : ''}`;
+      updateSummary();
+      return;
+    }
+  } catch (err) {
+    // función no disponible todavía (sitio aún en drag-and-drop, o sin token) — sigue al respaldo
+  }
+
+  // 2) Respaldo: estimado fijo por zona usando Postali (gratis, sin cotización real)
+  try {
+    const res = await fetch(`https://postali.app/api/v1/mx/cp/${cp}`);
+    if (!res.ok) throw new Error('CP no encontrado');
+    const data = await res.json();
+    const isLocal = SHIPPING_ZONES.local.estados.includes(data.estado);
+    const cost = isLocal ? SHIPPING_ZONES.local.cost : SHIPPING_ZONES.nacional.cost;
+    state.shippingInfo = { estado: data.estado, municipio: data.municipio, cost, real: false };
+    state.cpStatus = 'ok';
+    feedback.style.color = '#2e7d4f';
+    feedback.textContent = `📍 ${data.municipio}, ${data.estado} — envío estimado ${money(cost)}`;
+  } catch (err) {
+    state.cpStatus = 'error';
+    feedback.style.color = 'var(--rose)';
+    feedback.textContent = 'No pudimos calcular tu envío. Te confirmamos el costo por WhatsApp.';
+  }
+  updateSummary();
+}
+
+function renderCart() {
+  const list = document.getElementById('cartItems');
+  const empty = document.getElementById('cartEmpty');
+  const discountSection = document.getElementById('cartDiscountSection');
+  const cpSection = document.getElementById('cpSection');
+  const summary = document.getElementById('cartSummary');
+  const entries = Object.entries(state.cart);
+
+  document.getElementById('fcCount').textContent = cartCount();
+  document.getElementById('floatingCart').classList.toggle('show', cartCount() > 0);
+
+  if (entries.length === 0) {
+    list.innerHTML = '';
+    empty.style.display = 'block';
+    discountSection.style.display = 'none';
+    cpSection.style.display = 'none';
+    summary.style.display = 'none';
+    updateWaLink();
+    return;
+  }
+
+  empty.style.display = 'none';
+  discountSection.style.display = 'block';
+  cpSection.style.display = hasPack4() && Object.keys(state.cart).length === 1 ? 'none' : 'block';
+  summary.style.display = 'block';
+
+  list.innerHTML = entries.map(([id, qty]) => {
+    const p = products[id];
+    return `
+      <div class="cart-item" data-id="${id}">
+        <img src="${p.image}" alt="${p.title}" />
+        <div>
+          <div class="cart-item-name">${p.title}</div>
+          <div class="cart-item-price">${money(p.unit_price)} c/u</div>
+        </div>
+        <div class="cart-item-right">
+          <div class="cart-item-subtotal">${money(p.unit_price * qty)}</div>
+          <div class="cart-qty-controls">
+            <button type="button" class="cart-qty-minus" data-id="${id}">−</button>
+            <span class="cart-qty-val">${qty}</span>
+            <button type="button" class="cart-qty-plus" data-id="${id}">+</button>
+          </div>
+          <button type="button" class="cart-item-remove" data-id="${id}">Quitar</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  list.querySelectorAll('.cart-qty-minus').forEach(btn => btn.onclick = () => changeQty(btn.dataset.id, -1));
+  list.querySelectorAll('.cart-qty-plus').forEach(btn => btn.onclick = () => changeQty(btn.dataset.id, 1));
+  list.querySelectorAll('.cart-item-remove').forEach(btn => btn.onclick = () => removeFromCart(btn.dataset.id));
+
+  updateSummary();
+}
+
+function updateSummary() {
+  const subtotal = getSubtotal();
+  const shipping = getShipping();
+  const disc = getDiscount();
+
+  document.getElementById('cartSubtotal').textContent = money(subtotal);
+  document.getElementById('prodShipping').textContent = shipping.label;
+
+  const discountRow = document.getElementById('discountRow');
+  const feedback = document.getElementById('codeFeedback');
+  const totalNote = document.getElementById('totalNote');
+  const code = (state.code || '').trim().toUpperCase();
+
+  let baseTotal = subtotal;
+  if (disc.valid === true) {
+    discountRow.style.display = 'flex';
+    document.getElementById('prodDiscount').textContent = '-' + money(disc.amount);
+    feedback.style.color = '#2e7d4f';
+    feedback.textContent = `Código válido ✓ -10% en modelos individuales`;
+    baseTotal = subtotal - disc.amount;
+  } else if (disc.valid === 'noeligible') {
+    discountRow.style.display = 'none';
+    feedback.style.color = 'var(--wine)';
+    feedback.textContent = 'Este código no aplica al Pack de 4.';
+  } else {
+    discountRow.style.display = 'none';
+    feedback.style.color = 'var(--rose)';
+    feedback.textContent = code ? 'Código no válido.' : '';
+  }
+
+  if (shipping.known) {
+    document.getElementById('prodTotal').textContent = money(baseTotal + shipping.cost);
+    totalNote.textContent = 'El envío final y el link de pago te los confirmamos por WhatsApp.';
+  } else {
+    document.getElementById('prodTotal').textContent = money(baseTotal) + ' + envío';
+    totalNote.textContent = 'Ingresa tu código postal para estimar el envío. El costo final se confirma por WhatsApp.';
+  }
+
+  updateWaLink();
+}
+
+function updateWaLink() {
+  const waBtn = document.getElementById('waBuy');
+  const entries = Object.entries(state.cart);
+  if (entries.length === 0) {
+    waBtn.href = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent('👋 ¡Hola! Quiero hacer un pedido de Marea Grip Socks. 🌊🤍')}`;
+    return;
+  }
+
+  const subtotal = getSubtotal();
+  const disc = getDiscount();
+  const cp = (state.postalCode || '').trim();
+
+  let msg = `👋 ¡Hola! Quiero hacer un pedido de Marea Grip Socks. 🌊🤍\n\n🧦 Productos:`;
+  entries.forEach(([id, qty]) => {
+    const p = products[id];
+    msg += `\n• ${p.title} ×${qty}`;
+  });
+  msg += `\n\n💰 Subtotal: ${money(subtotal)}`;
+  if (state.code) {
+    msg += `\n🎟️ Código de descuento: ${state.code.toUpperCase()}`;
+    if (disc.valid === true) msg += ` (-${Math.round(disc.percent * 100)}%)`;
+    else if (disc.valid === 'noeligible') msg += ` (no aplica al Pack de 4)`;
+    else msg += ` (no válido)`;
+  }
+  msg += `\n🚚 Código postal: ${cp || '_______'}`;
+  if (state.shippingInfo) {
+    if (state.shippingInfo.real) {
+      msg += `\n📦 Envío (${state.shippingInfo.carrier.toUpperCase()}): ${money(state.shippingInfo.cost)} MXN`;
+    } else {
+      msg += `\n📦 Envío estimado (${state.shippingInfo.municipio}, ${state.shippingInfo.estado}): ${money(state.shippingInfo.cost)} MXN`;
+    }
+  }
+  msg += `\n\nEntiendo que el costo de envío se calcula según mi ubicación y que mi pedido está sujeto a disponibilidad de inventario. ¿Me pueden compartir el costo final con envío y los métodos de pago (Mercado Pago o transferencia)? ✨`;
+  waBtn.href = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+}
+
+
+document.getElementById('floatingCart').addEventListener('click', () => {
+  document.getElementById('checkout').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+document.getElementById('cp').addEventListener('input', (e) => {
+  const val = e.target.value.replace(/\D/g, '').slice(0, 5);
+  e.target.value = val;
+  state.postalCode = val;
+  calculatePostalShipping(val);
+});
+
+// Menú hamburguesa (mobile)
+const menuToggle = document.getElementById('menuToggle');
+const mobileNav = document.getElementById('mobileNav');
+menuToggle.addEventListener('click', () => {
+  menuToggle.classList.toggle('open');
+  mobileNav.classList.toggle('open');
+});
+mobileNav.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', () => {
+    menuToggle.classList.remove('open');
+    mobileNav.classList.remove('open');
+  });
+});
+
+document.getElementById('code').addEventListener('input', (e) => {
+  state.code = e.target.value;
+  updateSummary();
+});
+
+// Links de ayuda del footer -> WhatsApp
+const helpMsgs = {
+  waHelp1: 'Hola 👋 Tengo una duda sobre envíos de Marea Grip Socks.',
+  waHelp2: 'Hola 👋 Tengo una duda sobre cambios o devoluciones de Marea Grip Socks.',
+  waHelp3: 'Hola 👋 Tengo una pregunta sobre Marea Grip Socks.',
+  waHelp3b: 'Hola 👋 Tengo una pregunta sobre Marea Grip Socks.',
+  waStudioPartner: 'Hola 👋 Tengo un estudio y me interesa unirme a Club Marea como estudio aliado.',
+  waStudioPartner2: 'Hola 👋 Tengo un estudio y me interesa unirme a Club Marea como estudio aliado.'
+};
+Object.entries(helpMsgs).forEach(([id, msg]) => {
+  const el = document.getElementById(id);
+  if (el) el.href = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+});
+document.getElementById('headerWa').href = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent('Hola 👋 Tengo una pregunta sobre Marea Grip Socks.')}`;
+
+// Galería estilo Instagram (posts reales de @marea.socks)
+const igImages = [
+  'images/ig-post-3.jpg','images/ig-post-4.jpg',
+  'images/ig-post-5.jpg','images/ig-post-6.jpg'
+];
+const igGrid = document.getElementById('igGrid');
+igImages.forEach(src => {
+  const a = document.createElement('a');
+  a.href = 'https://www.instagram.com/marea.socks?igsh=MXNxZm1pMTNibmFrOA==';
+  a.target = '_blank';
+  a.innerHTML = `<img src="${src}" alt="Marea Instagram" />`;
+  igGrid.appendChild(a);
+});
+
+// Prellenar código si viene de un link de influencer: ?ref=MARIA10
+const urlParams = new URLSearchParams(window.location.search);
+const ref = urlParams.get('ref');
+if (ref) {
+  document.getElementById('code').value = ref;
+  state.code = ref;
+}
+
+renderProducts();
+renderCart();
+</script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+// netlify/functions/shipping-rate.js
+//
+// Cotiza envío real usando la API de Envia.com (multi-paquetería).
+// El ENVIA_TOKEN nunca va en el frontend: se lee de una variable de entorno
+// configurada en Netlify (Site settings → Environment variables).
+//
+// Frontend llama a: POST /.netlify/functions/shipping-rate
+// Body: { "postalCode": "55075", "cart": { "pilates": 2, "pack4": 1 } }
+//
+// Respuesta: { ok: true, cost, carrier, service, deliveryEstimate }
+//         o: { ok: false, error }  → el frontend debe hacer fallback al estimado fijo por zona.
+
+const ENVIA_BASE = process.env.ENVIA_ENV === 'production'
+  ? 'https://api.envia.com'
+  : 'https://api-test.envia.com';
+
+// ─────────────────────────────────────────────────────────────
+// TODO (Mafer): reemplaza estos datos con la dirección real desde
+// donde se envían los pedidos de Marea. Son necesarios para cotizar.
+// ─────────────────────────────────────────────────────────────
+const ORIGIN = {
+  name: 'Mafer — Marea Grip Socks',
+  company: 'Marea',
+  phone: '+52 5621385605',
+  email: 'hola@marea.mx',        // TODO: confirmar correo real si es distinto
+  street: 'Querétaro 58, Residencial Calacoaya, Lote 3',
+  city: 'Atizapán de Zaragoza',
+  state: 'MEX',                  // Estado de México
+  country: 'MX',
+  postalCode: '52990'
+};
+
+// Perfiles de paquete — igual que PACKAGE_SPECS en el frontend
+const PACKAGE_SPECS = {
+  1: { weight: 0.15, length: 20, width: 12, height: 4 },
+  2: { weight: 0.30, length: 20, width: 12, height: 6 },
+  3: { weight: 0.45, length: 20, width: 12, height: 8 },
+  pack4: { weight: 0.60, length: 20, width: 18, height: 8 }
+};
+
+const CARRIERS_TO_QUOTE = ['estafeta', 'fedex', 'dhl'];
+
+// Mapeo de nombre de estado (como lo devuelve la API de códigos postales) a código de 2-3 letras que pide Envia.
+const MX_STATE_CODES = {
+  'Aguascalientes': 'AG', 'Baja California': 'BC', 'Baja California Sur': 'BS',
+  'Campeche': 'CM', 'Chiapas': 'CS', 'Chihuahua': 'CH', 'Ciudad de México': 'CX',
+  'Coahuila': 'CO', 'Colima': 'CL', 'Durango': 'DG', 'Guanajuato': 'GT',
+  'Guerrero': 'GR', 'Hidalgo': 'HG', 'Jalisco': 'JA', 'México': 'MEX',
+  'Michoacán': 'MI', 'Morelos': 'MO', 'Nayarit': 'NA', 'Nuevo León': 'NL',
+  'Oaxaca': 'OA', 'Puebla': 'PU', 'Querétaro': 'QA', 'Quintana Roo': 'QR',
+  'San Luis Potosí': 'SL', 'Sinaloa': 'SI', 'Sonora': 'SO', 'Tabasco': 'TB',
+  'Tamaulipas': 'TM', 'Tlaxcala': 'TL', 'Veracruz': 'VE', 'Yucatán': 'YU', 'Zacatecas': 'ZA'
+};
+
+async function resolveLocation(postalCode) {
+  try {
+    const res = await fetch(`https://postali.app/api/v1/mx/cp/${postalCode}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    return { estado: data.estado, municipio: data.municipio, stateCode: MX_STATE_CODES[data.estado] || 'CX' };
+  } catch {
+    return null;
+  }
+}
+
+function buildPackages(cart) {
+  const packages = [];
+  const pack4Qty = cart.pack4 || 0;
+  const individualQty = Object.entries(cart)
+    .filter(([id]) => id !== 'pack4')
+    .reduce((sum, [, qty]) => sum + qty, 0);
+
+  if (individualQty > 0) {
+    // Usa el perfil de caja según cuántos pares individuales van juntos.
+    // Para más de 3, se aproxima agrupando en cajas de 3.
+    if (individualQty <= 3) {
+      const spec = PACKAGE_SPECS[individualQty];
+      packages.push(packageFromSpec(spec, 1));
+    } else {
+      const boxesOf3 = Math.floor(individualQty / 3);
+      const remainder = individualQty % 3;
+      if (boxesOf3 > 0) packages.push(packageFromSpec(PACKAGE_SPECS[3], boxesOf3));
+      if (remainder > 0) packages.push(packageFromSpec(PACKAGE_SPECS[remainder], 1));
+    }
+  }
+
+  if (pack4Qty > 0) {
+    packages.push(packageFromSpec(PACKAGE_SPECS.pack4, pack4Qty));
+  }
+
+  return packages;
+}
+
+function packageFromSpec(spec, amount) {
+  return {
+    type: 'box',
+    content: 'Grip socks',
+    amount,
+    declaredValue: 249 * amount,
+    weight: spec.weight,
+    weightUnit: 'KG',
+    lengthUnit: 'CM',
+    dimensions: { length: spec.length, width: spec.width, height: spec.height }
+  };
+}
+
+exports.handler = async (event) => {
+  if (event.httpMethod !== 'POST') {
+    return { statusCode: 405, body: JSON.stringify({ ok: false, error: 'Method not allowed' }) };
+  }
+
+  const token = process.env.ENVIA_TOKEN;
+  if (!token) {
+    return { statusCode: 500, body: JSON.stringify({ ok: false, error: 'ENVIA_TOKEN no configurado en el servidor' }) };
+  }
+
+  let body;
+  try {
+    body = JSON.parse(event.body || '{}');
+  } catch {
+    return { statusCode: 400, body: JSON.stringify({ ok: false, error: 'Body inválido' }) };
+  }
+
+  const { postalCode, cart } = body;
+  if (!/^\d{5}$/.test(postalCode || '')) {
+    return { statusCode: 400, body: JSON.stringify({ ok: false, error: 'Código postal inválido' }) };
+  }
+  if (!cart || Object.keys(cart).length === 0) {
+    return { statusCode: 400, body: JSON.stringify({ ok: false, error: 'Carrito vacío' }) };
+  }
+
+  const packages = buildPackages(cart);
+
+  const location = await resolveLocation(postalCode);
+  if (!location) {
+    return { statusCode: 200, body: JSON.stringify({ ok: false, error: 'Código postal no encontrado' }) };
+  }
+
+  const destination = {
+    name: 'Cliente Marea',
+    phone: '+52 0000000000',
+    street: 'N/A',
+    city: location.municipio || location.estado,
+    state: location.stateCode,
+    country: 'MX',
+    postalCode
+  };
+
+  const ratePromises = CARRIERS_TO_QUOTE.map((carrier) =>
+    fetch(`${ENVIA_BASE}/ship/rate/`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        origin: ORIGIN,
+        destination,
+        packages,
+        shipment: { type: 1, carrier }
+      })
+    })
+      .then((r) => r.json())
+      .catch(() => null)
+  );
+
+  try {
+    const results = await Promise.allSettled(ratePromises);
+    const rates = results
+      .filter((r) => r.status === 'fulfilled' && r.value && r.value.data && r.value.data.length)
+      .flatMap((r) => r.value.data)
+      .sort((a, b) => parseFloat(a.totalPrice) - parseFloat(b.totalPrice));
+
+    if (rates.length === 0) {
+      return { statusCode: 200, body: JSON.stringify({ ok: false, error: 'Sin cotizaciones disponibles para ese código postal' }) };
+    }
+
+    const best = rates[0];
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        ok: true,
+        cost: Math.round(parseFloat(best.totalPrice)),
+        carrier: best.carrier,
+        service: best.serviceDescription || best.service,
+        deliveryEstimate: best.deliveryEstimate || null,
+        municipio: location.municipio,
+        estado: location.estado
+      })
+    };
+  } catch (err) {
+    return { statusCode: 500, body: JSON.stringify({ ok: false, error: 'Error consultando Envia.com' }) };
+  }
+};

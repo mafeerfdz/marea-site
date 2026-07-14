@@ -9,6 +9,7 @@
 <style>
   :root {
     --cream: #FFFDF5;
+    --cream-deep: #F3ECE6;
     --text: #5D0C0C;
     --wine: #5D0C0C;
     --wine-dark: #3D0808;
@@ -135,6 +136,112 @@
     .btn-secondary { margin-left: 0; margin-top: 10px; display: block; text-align: center; }
     .btn-primary { display: block; text-align: center; }
   }
+
+  /* ---------- Hero Carousel "First Wave" ---------- */
+  .hero-carousel {
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+    aspect-ratio: 4/5;
+    background: var(--cream-deep);
+  }
+  .hero-carousel-ghost {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .hero-carousel-ghost span {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-style: italic;
+    font-size: 13vw;
+    line-height: 1;
+    color: var(--wine);
+    opacity: 0.06;
+    white-space: nowrap;
+    transition: opacity 0.6s ease;
+  }
+  .hero-carousel-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: scale(1.06);
+    transition: opacity 0.9s ease, transform 1.4s ease;
+    z-index: 2;
+  }
+  .hero-carousel-slide.active {
+    opacity: 1;
+    transform: scale(1);
+    z-index: 3;
+  }
+  .hero-carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .hero-carousel-caption {
+    position: absolute;
+    left: 18px;
+    bottom: 18px;
+    z-index: 4;
+    background: rgba(255,253,245,0.88);
+    backdrop-filter: blur(4px);
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--wine);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.5s ease 0.2s, transform 0.5s ease 0.2s;
+  }
+  .hero-carousel-slide.active .hero-carousel-caption {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .hero-carousel-dots {
+    position: absolute;
+    bottom: 18px;
+    right: 18px;
+    z-index: 5;
+    display: flex;
+    gap: 8px;
+  }
+  .hero-carousel-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(93,12,12,0.28);
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.3s ease, transform 0.3s ease;
+  }
+  .hero-carousel-dot.active {
+    background: var(--wine);
+    transform: scale(1.3);
+  }
+  .hero-carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    background: rgba(255,253,245,0.85);
+    border: none;
+    border-radius: 50%;
+    width: 34px; height: 34px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--wine);
+    font-size: 18px;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  .hero-carousel-arrow:hover { background: #fff; transform: translateY(-50%) scale(1.08); }
+  .hero-carousel-arrow.prev { left: 14px; }
+  .hero-carousel-arrow.next { right: 14px; }
 
   /* ---------- Benefits ---------- */
   .benefits {
@@ -397,7 +504,7 @@
     .footer-inner { grid-template-columns: 1fr 1fr; }
   }
 
-  /* ---------- Motion: scroll-reveal, icon-draw, parallax ---------- */
+  /* ---------- Motion: scroll-reveal, icon-draw, parallax, reduced-motion ---------- */
   .benefits-grid svg path,
   .benefits-grid svg circle {
     transition: stroke-dashoffset 0.9s ease;
@@ -418,6 +525,12 @@
       transition: none !important;
       stroke-dashoffset: 0 !important;
     }
+    .hero-carousel-slide {
+      transition: opacity 0.2s ease !important;
+      transform: none !important;
+    }
+    .hero-carousel-caption { transition: opacity 0.2s ease !important; transform: none !important; }
+    .hero-carousel-dot { transition: none !important; }
   }
 </style>
 </head>
@@ -469,7 +582,14 @@
     </div>
   </div>
   <div class="hero-img">
-    <img src="images/hero.jpg" alt="Marea grip socks en movimiento" />
+    <div class="hero-carousel" id="heroCarousel">
+      <div class="hero-carousel-ghost"><span id="heroGhostText"></span></div>
+
+      <button class="hero-carousel-arrow prev" id="heroPrev" aria-label="Anterior">‹</button>
+      <button class="hero-carousel-arrow next" id="heroNext" aria-label="Siguiente">›</button>
+
+      <div class="hero-carousel-dots" id="heroDots"></div>
+    </div>
   </div>
 </section>
 
@@ -1079,6 +1199,81 @@ if (ref) {
 
 renderProducts();
 renderCart();
+
+// ---------- Hero Carousel "First Wave" ----------
+function initHeroCarousel() {
+  const container = document.getElementById('heroCarousel');
+  if (!container) return;
+
+  const slidesData = [
+    { image: 'images/design-pilates.jpg', name: 'Pilates & Latte', ghost: 'LATTE' },
+    { image: 'images/design-pulse.jpg', name: "Don't Shake, They Pulse", ghost: 'PULSE' },
+    { image: 'images/design-calm.jpg', name: 'Strong Body, Calm Mind', ghost: 'CALM' },
+    { image: 'images/design-move.jpg', name: 'Move with Intention', ghost: 'MOVE' }
+  ];
+
+  const dotsWrap = document.getElementById('heroDots');
+  const ghostText = document.getElementById('heroGhostText');
+  const arrowsHtml = container.querySelectorAll('.hero-carousel-arrow');
+
+  slidesData.forEach((slide, i) => {
+    const el = document.createElement('div');
+    el.className = 'hero-carousel-slide' + (i === 0 ? ' active' : '');
+    el.innerHTML = `<img src="${slide.image}" alt="Marea ${slide.name}" />
+      <div class="hero-carousel-caption">${slide.name}</div>`;
+    container.insertBefore(el, dotsWrap);
+
+    const dot = document.createElement('button');
+    dot.className = 'hero-carousel-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', `Ver ${slide.name}`);
+    dot.dataset.index = i;
+    dotsWrap.appendChild(dot);
+  });
+
+  const slideEls = container.querySelectorAll('.hero-carousel-slide');
+  const dotEls = dotsWrap.querySelectorAll('.hero-carousel-dot');
+  let current = 0;
+  let timer = null;
+  const prefersReducedMotionCarousel = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function goTo(index) {
+    slideEls[current].classList.remove('active');
+    dotEls[current].classList.remove('active');
+    current = (index + slidesData.length) % slidesData.length;
+    slideEls[current].classList.add('active');
+    dotEls[current].classList.add('active');
+    ghostText.textContent = slidesData[current].ghost;
+    ghostText.style.opacity = '0';
+    requestAnimationFrame(() => { ghostText.style.opacity = ''; });
+  }
+
+  ghostText.textContent = slidesData[0].ghost;
+
+  function startAutoplay() {
+    if (prefersReducedMotionCarousel) return;
+    stopAutoplay();
+    timer = setInterval(() => goTo(current + 1), 4500);
+  }
+  function stopAutoplay() {
+    if (timer) clearInterval(timer);
+  }
+
+  dotEls.forEach(dot => {
+    dot.addEventListener('click', () => {
+      goTo(parseInt(dot.dataset.index, 10));
+      startAutoplay();
+    });
+  });
+  arrowsHtml[0].addEventListener('click', () => { goTo(current - 1); startAutoplay(); });
+  arrowsHtml[1].addEventListener('click', () => { goTo(current + 1); startAutoplay(); });
+
+  container.addEventListener('mouseenter', stopAutoplay);
+  container.addEventListener('mouseleave', startAutoplay);
+
+  startAutoplay();
+}
+
+initHeroCarousel();
 
 // ---------- Motion: scroll-reveal, hover, icon-draw, parallax ----------
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

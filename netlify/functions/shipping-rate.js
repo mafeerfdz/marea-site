@@ -15,6 +15,26 @@ const ENVIA_BASE = process.env.ENVIA_ENV === 'test'
   : 'https://api.envia.com';
 
 // ─────────────────────────────────────────────────────────────
+// Códigos postales de zona cercana (Satélite / Naucalpan / Atizapán) con
+// tarifa de envío fija, sin consultar Postali ni Envia.
+// ─────────────────────────────────────────────────────────────
+const FIXED_RATE_POSTAL_CODES = new Set([
+  '53100', // Ciudad Satélite / Circuito Médicos / Zona Azul / Zona Comercial
+  '53140', // Boulevares
+  '53150', // La Alteña
+  '53300', // Parque de la Ciudadela / Los Remedios
+  '53120', // Jardines de Satélite
+  '53125', // Lomas Verdes 4a. Sección
+  '53126', // Lomas Verdes
+  '52930', // Bosque de Esmeralda, Club de Golf Chiluca, Hacienda de Valle Esmeralda, Lomas de Esmeralda, Rancho Blanco, Residencial Chiluca, Villas de la Hacienda
+  '52937', // Club de Golf Valle Escondido, Prado Largo, Valle Escondido
+  '52938', // Condado de Sayavedra, Fincas de Sayavedra
+  '52990', // Calacoaya
+  '52977'  // Lomas de Atizapán
+]);
+const FIXED_RATE_COST = 45;
+
+// ─────────────────────────────────────────────────────────────
 // TODO (Mafer): reemplaza estos datos con la dirección real desde
 // donde se envían los pedidos de Marea. Son necesarios para cotizar.
 // ─────────────────────────────────────────────────────────────
@@ -158,6 +178,23 @@ exports.handler = async (event) => {
   if (!cart || Object.keys(cart).length === 0) {
     console.error('[shipping-rate] Carrito vacío');
     return { statusCode: 400, body: JSON.stringify({ ok: false, error: 'Carrito vacío' }) };
+  }
+
+  // Zona cercana con tarifa fija: se responde de inmediato, sin llamar a Postali ni a Envia.
+  if (FIXED_RATE_POSTAL_CODES.has(postalCode)) {
+    console.log('[shipping-rate] CP en zona de tarifa fija:', postalCode);
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        ok: true,
+        cost: FIXED_RATE_COST,
+        carrier: 'Envío local Marea',
+        service: 'Tarifa fija zona cercana',
+        deliveryEstimate: null,
+        municipio: null,
+        estado: null
+      })
+    };
   }
 
   const packages = buildPackages(cart);

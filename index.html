@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
@@ -50,9 +49,9 @@
     display: inline-flex; align-items: center; gap: 6px;
     background: #25D366; color: #fff !important; font-size: 13px; font-weight: 700;
     padding: 9px 16px; border-radius: 20px; letter-spacing: 0.2px;
-    transition: background 0.2s;
+    transition: background 0.2s, transform 0.2s;
   }
-  .header-right:hover { background: #1DA851; }
+  .header-right:hover { background: #1DA851; transform: translateY(-2px); }
   .header-right svg { width: 15px; height: 15px; fill: #fff; }
 
   .menu-toggle {
@@ -119,7 +118,9 @@
     text-decoration: none; font-weight: 600; font-size: 13.5px;
     color: var(--wine); border: 1.5px solid var(--wine); margin-left: 12px;
     letter-spacing: 0.3px; background: transparent;
+    transition: background 0.2s, transform 0.2s;
   }
+  .btn-secondary:hover { transform: translateY(-2px); background: rgba(93,12,12,0.05); }
   .hero-img img { border-radius: 18px; width: 100%; object-fit: cover; aspect-ratio: 4/5; }
   .hero-benefits { display: flex; gap: 22px; margin-bottom: 26px; flex-wrap: wrap; }
   .hero-benefit { display: flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 600; color: var(--wine); }
@@ -174,7 +175,7 @@
   }
   .find-marea-text h2 { font-size: 46px; font-weight: 500; line-height: 1.1; margin: 0 0 22px; }
   .find-marea-text p { font-size: 16px; line-height: 1.7; color: var(--rose); max-width: 420px; margin-bottom: 30px; }
-  .find-marea-img img { border-radius: 18px; width: 100%; object-fit: cover; aspect-ratio: 4/3; }
+  .find-marea-img img { border-radius: 18px; width: 100%; object-fit: cover; aspect-ratio: 4/3; will-change: transform; }
   @media (max-width: 800px) {
     .find-marea { grid-template-columns: 1fr; padding: 70px 20px; gap: 34px; }
     .find-marea-img { order: -1; }
@@ -209,8 +210,9 @@
     display: block; width: 100%; padding: 11px; border-radius: 8px;
     background: var(--wine); border: 1.5px solid var(--wine); color: #fff;
     font-weight: 700; font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
+    transition: background 0.2s, transform 0.2s;
   }
-  .p-card .p-btn:hover { background: var(--wine-dark); }
+  .p-card .p-btn:hover { background: var(--wine-dark); transform: translateY(-2px); }
   .p-card.pack .p-name { min-height: auto; }
   .p-card.in-cart { border-color: var(--wine); box-shadow: 0 4px 16px rgba(93,12,12,0.10); }
   .p-card .p-qty-stepper {
@@ -235,8 +237,9 @@
   .ver-todos a {
     display: inline-block; border: 1.5px solid var(--text); border-radius: 8px;
     padding: 12px 24px; font-size: 13px; font-weight: 600; letter-spacing: 0.5px;
-    text-decoration: none;
+    text-decoration: none; transition: background 0.2s, color 0.2s, transform 0.2s;
   }
+  .ver-todos a:hover { transform: translateY(-2px); background: var(--wine); color: #fff; }
 
   /* ---------- Checkout panel ---------- */
   .checkout {
@@ -312,7 +315,9 @@
     width: 100%; background: #25D366; color: #fff; border: none;
     padding: 15px; border-radius: 10px; font-size: 15px; font-weight: 700;
     text-decoration: none; margin-top: 6px; font-family: 'DM Sans';
+    transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
   }
+  .wa-inline:hover { background: #1DA851; transform: translateY(-2px); box-shadow: 0 8px 18px rgba(37,211,102,0.3); }
   .wa-inline svg { width: 20px; height: 20px; fill: #fff; }
   .quick-checklist { list-style: none; padding: 0; margin: 0 0 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px 10px; }
   .quick-checklist li { font-size: 12px; font-weight: 600; color: var(--wine); position: relative; padding-left: 18px; }
@@ -370,7 +375,7 @@
   .ig-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
   .ig-grid a { display: block; overflow: hidden; border-radius: 6px; }
   .ig-grid img { aspect-ratio: 1/1; object-fit: cover; transition: transform 0.3s; }
-  .ig-grid a:hover img { transform: scale(1.08); }
+  .ig-grid a:hover img { transform: scale(1.05); }
   @media (max-width: 700px) {
     .ig-grid { grid-template-columns: repeat(2, 1fr); }
   }
@@ -390,6 +395,29 @@
   }
   @media (max-width: 700px) {
     .footer-inner { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* ---------- Motion: scroll-reveal, icon-draw, parallax ---------- */
+  .benefits-grid svg path,
+  .benefits-grid svg circle {
+    transition: stroke-dashoffset 0.9s ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .p-card, .p-card img, .btn-primary, .btn-secondary, .p-card .p-btn,
+    .wa-inline, .ver-todos a, .header-right, .ig-grid img, .find-marea-img img {
+      transition: none !important;
+    }
+    .p-card:hover, .p-card:hover img,
+    .btn-primary:hover, .btn-secondary:hover, .p-card .p-btn:hover,
+    .wa-inline:hover, .ver-todos a:hover, .header-right:hover, .ig-grid a:hover img {
+      transform: none !important;
+    }
+    .benefits-grid svg path,
+    .benefits-grid svg circle {
+      transition: none !important;
+      stroke-dashoffset: 0 !important;
+    }
   }
 </style>
 </head>
@@ -453,14 +481,14 @@
     <h2>La colección</h2>
     <div class="rule"></div>
   </div>
-  <div class="coleccion-intro">
+  <div class="coleccion-intro reveal-target">
     <p><strong>First Wave</strong> — Nuestra primera colección. Cuatro diseños. Cuatro energías. Cuatro maneras de conectar contigo. First Wave nace para recordarte que cada clase empieza con una intención diferente. Encuentra la tuya.</p>
   </div>
   <div class="product-grid" id="productGrid"></div>
   <div class="ver-todos"><a href="#coleccion">Ver todos los diseños</a></div>
 
   <div class="checkout" id="checkout">
-    <div class="checkout-box">
+    <div class="checkout-box reveal-target">
       <h3>Tu pedido</h3>
       <div class="sub">Agrega los modelos que quieras — confirmamos el pago por WhatsApp.</div>
 
@@ -542,7 +570,7 @@
 </section>
 
 <section class="find-marea" id="encuentra-tu-marea">
-  <div class="find-marea-text">
+  <div class="find-marea-text reveal-target">
     <div class="eyebrow">Diseñados en México</div>
     <h2>Encuentra tu<br/>Marea.</h2>
     <p>No existe una sola manera de moverte. Cada diseño de Marea representa una energía distinta para acompañarte dentro y fuera del estudio. Encuentra la que conecta contigo.</p>
@@ -556,8 +584,8 @@
 
 
 <section class="historia" id="historia">
-  <img src="images/historia.jpg" alt="Más que grip socks" />
-  <div>
+  <img src="images/historia.jpg" alt="Más que grip socks" class="reveal-target" />
+  <div class="reveal-target">
     <div class="eyebrow">Nuestra historia</div>
     <h2>Marea nació de una idea muy simple: creemos que el movimiento también puede inspirar.</h2>
     <p>Creamos grip socks que van más allá de la funcionalidad. Cada diseño representa una energía distinta para acompañarte dentro y fuera del estudio.</p>
@@ -1051,6 +1079,138 @@ if (ref) {
 
 renderProducts();
 renderCart();
+
+// ---------- Motion: scroll-reveal, hover, icon-draw, parallax ----------
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function revealChildrenStaggered(container, staggerMs) {
+  if (!container) return;
+  const children = Array.from(container.children);
+  children.forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(16px)';
+    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+  });
+  void container.offsetHeight; // fuerza reflow antes de animar
+  children.forEach((el, i) => {
+    const delay = i * staggerMs;
+    setTimeout(() => {
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    }, delay);
+    setTimeout(() => {
+      el.style.transition = '';
+      el.style.transform = '';
+      el.style.opacity = '';
+    }, delay + 650);
+  });
+}
+
+function revealSingle(el) {
+  if (!el) return;
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(16px)';
+  el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+  void el.offsetHeight;
+  requestAnimationFrame(() => {
+    el.style.opacity = '1';
+    el.style.transform = 'translateY(0)';
+  });
+  setTimeout(() => {
+    el.style.transition = '';
+    el.style.transform = '';
+    el.style.opacity = '';
+  }, 650);
+}
+
+function initScrollReveal() {
+  if (prefersReducedMotion) return; // se queda todo visible, sin animación
+
+  const groupTargets = [
+    { selector: '#productGrid', stagger: 80 },
+    { selector: '.benefits-grid', stagger: 100 },
+    { selector: '.reviews-grid', stagger: 100 },
+    { selector: '.aliados-grid', stagger: 100 }
+  ];
+  groupTargets.forEach(({ selector, stagger }) => {
+    const el = document.querySelector(selector);
+    if (!el) return;
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          revealChildrenStaggered(entry.target, stagger);
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    obs.observe(el);
+  });
+
+  const singleTargets = document.querySelectorAll('.reveal-target');
+  const singleObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        revealSingle(entry.target);
+        singleObs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  singleTargets.forEach(el => singleObs.observe(el));
+}
+
+function setupIconDraw() {
+  const containers = Array.from(document.querySelectorAll('.benefits-grid > div'));
+  containers.forEach(div => {
+    const shapes = div.querySelectorAll('svg path, svg circle');
+    shapes.forEach(shape => {
+      if (typeof shape.getTotalLength === 'function') {
+        const len = shape.getTotalLength();
+        shape.style.strokeDasharray = len;
+        shape.style.strokeDashoffset = prefersReducedMotion ? 0 : len;
+      }
+    });
+  });
+
+  if (prefersReducedMotion) return;
+
+  const iconObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const idx = containers.indexOf(entry.target);
+        const delay = Math.max(idx, 0) * 100;
+        setTimeout(() => {
+          entry.target.querySelectorAll('svg path, svg circle').forEach(shape => {
+            shape.style.strokeDashoffset = '0';
+          });
+        }, delay);
+        iconObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+
+  containers.forEach(div => iconObserver.observe(div));
+}
+
+function initParallax() {
+  if (prefersReducedMotion) return;
+  const img = document.querySelector('.find-marea-img img');
+  if (!img) return;
+  const maxShift = 20;
+  function onScroll() {
+    const rect = img.getBoundingClientRect();
+    const winH = window.innerHeight;
+    const center = rect.top + rect.height / 2;
+    const progress = (winH / 2 - center) / (winH / 2);
+    const clamped = Math.max(-1, Math.min(1, progress));
+    img.style.transform = `translateY(${(clamped * maxShift).toFixed(1)}px)`;
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+}
+
+initScrollReveal();
+setupIconDraw();
+initParallax();
 </script>
 </body>
 </html>

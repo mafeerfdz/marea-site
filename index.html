@@ -970,7 +970,7 @@ async function calculatePostalShipping(cp) {
       state.shippingInfo = { cost: data.cost, carrier: data.carrier, service: data.service, deliveryEstimate: data.deliveryEstimate, real: true };
       state.cpStatus = 'ok';
       feedback.style.color = '#2e7d4f';
-      feedback.textContent = `📦 ${data.carrier.toUpperCase()} — envío ${money(data.cost)}${data.deliveryEstimate ? ' · ' + data.deliveryEstimate : ''}`;
+      feedback.textContent = `📦 ${data.carrier.toUpperCase()} — envío ${money(data.cost)}`;
       updateSummary();
       return;
     }
@@ -1103,7 +1103,9 @@ function updateWaLink() {
 
   const subtotal = getSubtotal();
   const disc = getDiscount();
+  const shipping = getShipping();
   const cp = (state.postalCode || '').trim();
+  const baseTotal = subtotal - (disc.valid === true ? disc.amount : 0);
 
   let msg = `👋 ¡Hola! Quiero hacer un pedido de Marea Grip Socks. 🌊🤍\n\n🧦 Productos:`;
   entries.forEach(([id, qty]) => {
@@ -1112,20 +1114,31 @@ function updateWaLink() {
   });
   msg += `\n\n💰 Subtotal: ${money(subtotal)}`;
   if (state.code) {
-    msg += `\n🎟️ Código de descuento: ${state.code.toUpperCase()}`;
+    msg += `\n🎟️ Código: ${state.code.toUpperCase()}`;
     if (disc.valid === true) msg += ` (-${Math.round(disc.percent * 100)}%)`;
     else if (disc.valid === 'noeligible') msg += ` (no aplica al Pack de 4)`;
     else msg += ` (no válido)`;
   }
-  msg += `\n🚚 Código postal: ${cp || '_______'}`;
-  if (state.shippingInfo) {
-    if (state.shippingInfo.real) {
-      msg += `\n📦 Envío (${state.shippingInfo.carrier.toUpperCase()}): ${money(state.shippingInfo.cost)} MXN${state.shippingInfo.deliveryEstimate ? ` · ${state.shippingInfo.deliveryEstimate}` : ''}`;
+
+  if (cp) {
+    if (state.shippingInfo) {
+      if (state.shippingInfo.real) {
+        msg += `\n📦 Envío (${state.shippingInfo.carrier.toUpperCase()}, CP ${cp}): ${money(state.shippingInfo.cost)} MXN`;
+      } else {
+        msg += `\n📦 Envío estimado (CP ${cp}, ${state.shippingInfo.municipio}): ${money(state.shippingInfo.cost)} MXN`;
+      }
     } else {
-      msg += `\n📦 Envío estimado (${state.shippingInfo.municipio}, ${state.shippingInfo.estado}): ${money(state.shippingInfo.cost)} MXN`;
+      msg += `\n📍 Código postal: ${cp}`;
     }
   }
-  msg += `\n\nEntiendo que el costo de envío se calcula según mi ubicación y que mi pedido está sujeto a disponibilidad de inventario. ¿Me pueden compartir el costo final con envío y los métodos de pago (Mercado Pago y transferencia)? ✨`;
+  if (hasPack4()) {
+    msg += `\n📦 Envío: Gratis (Pack de 4)`;
+  }
+  if (shipping.known) {
+    msg += `\n💳 Total: ${money(baseTotal + shipping.cost)}`;
+  }
+
+  msg += `\n\nEl envío final se confirma según mi código postal. ¿Me dicen el total y las opciones de pago?`;
   waBtn.href = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
 }
 

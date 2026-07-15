@@ -1095,4 +1095,317 @@ function updateSummary() {
 
 function updateWaLink() {
   const waBtn = document.getElementById('waBuy');
-  const entries =
+  const entries = Object.entries(state.cart);
+  if (entries.length === 0) {
+    waBtn.href = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent('👋 ¡Hola! Quiero hacer un pedido de Marea Grip Socks. 🌊🤍')}`;
+    return;
+  }
+
+  const subtotal = getSubtotal();
+  const disc = getDiscount();
+  const cp = (state.postalCode || '').trim();
+
+  let msg = `👋 ¡Hola! Quiero hacer un pedido de Marea Grip Socks. 🌊🤍\n\n🧦 Productos:`;
+  entries.forEach(([id, qty]) => {
+    const p = products[id];
+    msg += `\n• ${p.title} ×${qty}`;
+  });
+  msg += `\n\n💰 Subtotal: ${money(subtotal)}`;
+  if (state.code) {
+    msg += `\n🎟️ Código de descuento: ${state.code.toUpperCase()}`;
+    if (disc.valid === true) msg += ` (-${Math.round(disc.percent * 100)}%)`;
+    else if (disc.valid === 'noeligible') msg += ` (no aplica al Pack de 4)`;
+    else msg += ` (no válido)`;
+  }
+  msg += `\n🚚 Código postal: ${cp || '_______'}`;
+  if (state.shippingInfo) {
+    if (state.shippingInfo.real) {
+      msg += `\n📦 Envío (${state.shippingInfo.carrier.toUpperCase()}): ${money(state.shippingInfo.cost)} MXN${state.shippingInfo.deliveryEstimate ? ` · ${state.shippingInfo.deliveryEstimate}` : ''}`;
+    } else {
+      msg += `\n📦 Envío estimado (${state.shippingInfo.municipio}, ${state.shippingInfo.estado}): ${money(state.shippingInfo.cost)} MXN`;
+    }
+  }
+  msg += `\n\nEntiendo que el costo de envío se calcula según mi ubicación y que mi pedido está sujeto a disponibilidad de inventario. ¿Me pueden compartir el costo final con envío y los métodos de pago (Mercado Pago y transferencia)? ✨`;
+  waBtn.href = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+}
+
+
+document.getElementById('floatingCart').addEventListener('click', () => {
+  document.getElementById('checkout').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+document.getElementById('cp').addEventListener('input', (e) => {
+  const val = e.target.value.replace(/\D/g, '').slice(0, 5);
+  e.target.value = val;
+  state.postalCode = val;
+  calculatePostalShipping(val);
+});
+
+// Menú hamburguesa (mobile)
+const menuToggle = document.getElementById('menuToggle');
+const mobileNav = document.getElementById('mobileNav');
+menuToggle.addEventListener('click', () => {
+  menuToggle.classList.toggle('open');
+  mobileNav.classList.toggle('open');
+});
+mobileNav.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', () => {
+    menuToggle.classList.remove('open');
+    mobileNav.classList.remove('open');
+  });
+});
+
+document.getElementById('code').addEventListener('input', (e) => {
+  state.code = e.target.value;
+  updateSummary();
+});
+
+// Links de ayuda del footer -> WhatsApp
+const helpMsgs = {
+  waHelp1: 'Hola 👋 Tengo una duda sobre envíos de Marea Grip Socks.',
+  waHelp2: 'Hola 👋 Tengo una duda sobre cambios o devoluciones de Marea Grip Socks.',
+  waHelp3: 'Hola 👋 Tengo una pregunta sobre Marea Grip Socks.',
+  waHelp3b: 'Hola 👋 Tengo una pregunta sobre Marea Grip Socks.',
+  waStudioPartner: 'Hola 👋 Tengo un estudio y me interesa unirme a Club Marea como estudio aliado.',
+  waStudioPartner2: 'Hola 👋 Tengo un estudio y me interesa unirme a Club Marea como estudio aliado.'
+};
+Object.entries(helpMsgs).forEach(([id, msg]) => {
+  const el = document.getElementById(id);
+  if (el) el.href = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+});
+document.getElementById('headerWa').href = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent('Hola 👋 Tengo una pregunta sobre Marea Grip Socks.')}`;
+
+// Galería estilo Instagram (posts reales de @marea.socks)
+const igImages = [
+  'images/ig-post-3.jpg','images/ig-post-4.jpg',
+  'images/ig-post-5.jpg','images/ig-post-6.jpg'
+];
+const igGrid = document.getElementById('igGrid');
+igImages.forEach(src => {
+  const a = document.createElement('a');
+  a.href = 'https://www.instagram.com/marea.socks?igsh=MXNxZm1pMTNibmFrOA==';
+  a.target = '_blank';
+  a.innerHTML = `<img src="${src}" alt="Marea Instagram" />`;
+  igGrid.appendChild(a);
+});
+
+// Prellenar código si viene de un link de influencer: ?ref=MARIA10
+const urlParams = new URLSearchParams(window.location.search);
+const ref = urlParams.get('ref');
+if (ref) {
+  document.getElementById('code').value = ref;
+  state.code = ref;
+}
+
+renderProducts();
+renderCart();
+
+// ---------- Hero Carousel "First Wave" ----------
+function initHeroCarousel() {
+  const container = document.getElementById('heroCarousel');
+  if (!container) return;
+
+  const slidesData = [
+    { image: 'images/design-pilates.png', name: 'Pilates & Latte', ghost: 'LATTE' },
+    { image: 'images/design-pulse.png', name: "Don't Shake, They Pulse", ghost: 'PULSE' },
+    { image: 'images/design-calm.png', name: 'Strong Body, Calm Mind', ghost: 'CALM' },
+    { image: 'images/design-move.png', name: 'Move with Intention', ghost: 'MOVE' }
+  ];
+
+  const dotsWrap = document.getElementById('heroDots');
+  const ghostText = document.getElementById('heroGhostText');
+  const arrowsHtml = container.querySelectorAll('.hero-carousel-arrow');
+
+  slidesData.forEach((slide, i) => {
+    const el = document.createElement('div');
+    el.className = 'hero-carousel-slide' + (i === 0 ? ' active' : '');
+    el.innerHTML = `<img src="${slide.image}" alt="Marea ${slide.name}" />
+      <div class="hero-carousel-caption">${slide.name}</div>`;
+    container.insertBefore(el, dotsWrap);
+
+    const dot = document.createElement('button');
+    dot.className = 'hero-carousel-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', `Ver ${slide.name}`);
+    dot.dataset.index = i;
+    dotsWrap.appendChild(dot);
+  });
+
+  const slideEls = container.querySelectorAll('.hero-carousel-slide');
+  const dotEls = dotsWrap.querySelectorAll('.hero-carousel-dot');
+  let current = 0;
+  let timer = null;
+  const prefersReducedMotionCarousel = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function goTo(index) {
+    slideEls[current].classList.remove('active');
+    dotEls[current].classList.remove('active');
+    current = (index + slidesData.length) % slidesData.length;
+    slideEls[current].classList.add('active');
+    dotEls[current].classList.add('active');
+    ghostText.textContent = slidesData[current].ghost;
+    ghostText.style.opacity = '0';
+    requestAnimationFrame(() => { ghostText.style.opacity = ''; });
+  }
+
+  ghostText.textContent = slidesData[0].ghost;
+
+  function startAutoplay() {
+    if (prefersReducedMotionCarousel) return;
+    stopAutoplay();
+    timer = setInterval(() => goTo(current + 1), 4500);
+  }
+  function stopAutoplay() {
+    if (timer) clearInterval(timer);
+  }
+
+  dotEls.forEach(dot => {
+    dot.addEventListener('click', () => {
+      goTo(parseInt(dot.dataset.index, 10));
+      startAutoplay();
+    });
+  });
+  arrowsHtml[0].addEventListener('click', () => { goTo(current - 1); startAutoplay(); });
+  arrowsHtml[1].addEventListener('click', () => { goTo(current + 1); startAutoplay(); });
+
+  container.addEventListener('mouseenter', stopAutoplay);
+  container.addEventListener('mouseleave', startAutoplay);
+
+  startAutoplay();
+}
+
+initHeroCarousel();
+
+// ---------- Motion: scroll-reveal, hover, icon-draw, parallax ----------
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function revealChildrenStaggered(container, staggerMs) {
+  if (!container) return;
+  const children = Array.from(container.children);
+  children.forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(16px)';
+    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+  });
+  void container.offsetHeight; // fuerza reflow antes de animar
+  children.forEach((el, i) => {
+    const delay = i * staggerMs;
+    setTimeout(() => {
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    }, delay);
+    setTimeout(() => {
+      el.style.transition = '';
+      el.style.transform = '';
+      el.style.opacity = '';
+    }, delay + 650);
+  });
+}
+
+function revealSingle(el) {
+  if (!el) return;
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(16px)';
+  el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+  void el.offsetHeight;
+  requestAnimationFrame(() => {
+    el.style.opacity = '1';
+    el.style.transform = 'translateY(0)';
+  });
+  setTimeout(() => {
+    el.style.transition = '';
+    el.style.transform = '';
+    el.style.opacity = '';
+  }, 650);
+}
+
+function initScrollReveal() {
+  if (prefersReducedMotion) return; // se queda todo visible, sin animación
+
+  const groupTargets = [
+    { selector: '#productGrid', stagger: 80 },
+    { selector: '.benefits-grid', stagger: 100 },
+    { selector: '.reviews-grid', stagger: 100 },
+    { selector: '.aliados-grid', stagger: 100 }
+  ];
+  groupTargets.forEach(({ selector, stagger }) => {
+    const el = document.querySelector(selector);
+    if (!el) return;
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          revealChildrenStaggered(entry.target, stagger);
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    obs.observe(el);
+  });
+
+  const singleTargets = document.querySelectorAll('.reveal-target');
+  const singleObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        revealSingle(entry.target);
+        singleObs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  singleTargets.forEach(el => singleObs.observe(el));
+}
+
+function setupIconDraw() {
+  const containers = Array.from(document.querySelectorAll('.benefits-grid > div'));
+  containers.forEach(div => {
+    const shapes = div.querySelectorAll('svg path, svg circle');
+    shapes.forEach(shape => {
+      if (typeof shape.getTotalLength === 'function') {
+        const len = shape.getTotalLength();
+        shape.style.strokeDasharray = len;
+        shape.style.strokeDashoffset = prefersReducedMotion ? 0 : len;
+      }
+    });
+  });
+
+  if (prefersReducedMotion) return;
+
+  const iconObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const idx = containers.indexOf(entry.target);
+        const delay = Math.max(idx, 0) * 100;
+        setTimeout(() => {
+          entry.target.querySelectorAll('svg path, svg circle').forEach(shape => {
+            shape.style.strokeDashoffset = '0';
+          });
+        }, delay);
+        iconObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+
+  containers.forEach(div => iconObserver.observe(div));
+}
+
+function initParallax() {
+  if (prefersReducedMotion) return;
+  const img = document.querySelector('.find-marea-img img');
+  if (!img) return;
+  const maxShift = 20;
+  function onScroll() {
+    const rect = img.getBoundingClientRect();
+    const winH = window.innerHeight;
+    const center = rect.top + rect.height / 2;
+    const progress = (winH / 2 - center) / (winH / 2);
+    const clamped = Math.max(-1, Math.min(1, progress));
+    img.style.transform = `translateY(${(clamped * maxShift).toFixed(1)}px)`;
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+}
+
+initScrollReveal();
+setupIconDraw();
+initParallax();
+</script>
+</body>
+</html>

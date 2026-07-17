@@ -1184,51 +1184,26 @@ function updateWaLink() {
   const waBtn = document.getElementById('waBuy');
   const stickyBtn = document.getElementById('stickyWaBtn');
   const entries = Object.entries(state.cart);
-  if (entries.length === 0) {
-    const href = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent('👋 ¡Hola! Quiero hacer un pedido de Marea Grip Socks. 🌊🤍')}`;
-    waBtn.href = href;
-    if (stickyBtn) stickyBtn.href = href;
-    return;
-  }
-
-  const subtotal = getSubtotal();
-  const disc = getDiscount();
-  const shipping = getShipping();
   const cp = (state.postalCode || '').trim();
-  const baseTotal = subtotal - (disc.valid === true ? disc.amount : 0);
+  const code = (state.code || '').trim().toUpperCase();
 
-  let msg = `👋 ¡Hola! Quiero hacer un pedido de Marea Grip Socks. 🌊🤍\n\n🧦 Productos:`;
-  entries.forEach(([id, qty]) => {
-    const p = products[id];
-    msg += `\n• ${p.title} ×${qty}`;
-  });
-  msg += `\n\n💰 Subtotal: ${money(subtotal)}`;
-  if (state.code) {
-    msg += `\n🎟️ Código: ${state.code.toUpperCase()}`;
-    if (disc.valid === true) msg += ` (-${Math.round(disc.percent * 100)}%)`;
-    else if (disc.valid === 'noeligible') msg += ` (no aplica al Pack de 4)`;
-    else msg += ` (no válido)`;
-  }
+  const modelosLine = entries.length
+    ? entries.map(([id, qty]) => `${products[id].title} ×${qty}`).join(', ')
+    : '';
+  const cantidadLine = entries.length ? String(cartCount()) : '';
 
-  if (cp) {
-    if (state.shippingInfo) {
-      if (state.shippingInfo.real) {
-        msg += `\n📦 Envío (${state.shippingInfo.carrier.toUpperCase()}, CP ${cp}): ${money(state.shippingInfo.cost)} MXN`;
-      } else {
-        msg += `\n📦 Envío estimado (CP ${cp}, ${state.shippingInfo.municipio}): ${money(state.shippingInfo.cost)} MXN`;
-      }
-    } else {
-      msg += `\n📍 Código postal: ${cp}`;
-    }
-  }
-  if (hasPack4()) {
-    msg += `\n📦 Envío: Gratis (Pack de 4)`;
-  }
-  if (shipping.known) {
-    msg += `\n💳 Total: ${money(baseTotal + shipping.cost)}`;
-  }
+  const msg = `👋 ¡Hola! Quiero hacer un pedido de Marea Grip Socks. 🌊🤍
 
-  msg += `\n\nEl envío final se confirma según mi código postal. ¿Me dicen el total y las opciones de pago?`;
+🧦 Modelo(s): ${modelosLine}
+
+🔢 Cantidad: ${cantidadLine}
+
+📮 Código Postal: ${cp}
+
+🎟️ Código de descuento (si tengo): ${code}
+
+¡Gracias! ✨`;
+
   const finalHref = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
   waBtn.href = finalHref;
   if (stickyBtn) stickyBtn.href = finalHref;

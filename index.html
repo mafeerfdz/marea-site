@@ -328,6 +328,9 @@
     text-transform: uppercase; cursor: pointer; transition: background 0.2s, transform 0.2s;
   }
   .pick-card-front button:hover { background: var(--wine-dark); transform: translateY(-1px); }
+  .pick-card-front button:disabled, .pick-card-front button:disabled:hover {
+    background: transparent; color: var(--rose); border: 1.5px solid var(--rose); cursor: default; transform: none;
+  }
   .pick-card-reset {
     display: inline-block; margin-top: 26px; font-size: 12.5px; font-weight: 600;
     color: var(--rose); text-decoration: underline; cursor: pointer; opacity: 0; height: 0; overflow: hidden;
@@ -371,6 +374,11 @@
   }
   .p-card .p-btn:hover { background: var(--wine-dark); transform: translateY(-2px); }
   .p-card.pack .p-name { min-height: auto; }
+  .p-card.sold-out img { opacity: 0.55; }
+  .p-card.sold-out:hover img { transform: none; }
+  .p-card .p-btn:disabled, .p-card .p-btn:disabled:hover {
+    background: transparent; color: var(--rose); border-color: var(--rose); cursor: default; transform: none;
+  }
   .p-card.in-cart { border-color: var(--wine); box-shadow: 0 4px 16px rgba(93,12,12,0.10); }
   .p-card .p-qty-stepper {
     display: flex; align-items: center; justify-content: space-between;
@@ -912,7 +920,7 @@ const products = {
   pilates: { title: 'Pilates & Latte', tagline: 'Para quienes encuentran felicidad en una clase y un café después. Una Marea ligera y auténtica.', unit_price: 199, image: 'images/design-pilates.png', shipping: SHIPPING_FEE },
   pulse: { title: "Barre Girls Don't Shake, They Pulse", tagline: 'Barre girls don\u2019t shake. They pulse. Fuerza en la precisión y el control.', unit_price: 199, image: 'images/design-pulse_1.png', shipping: SHIPPING_FEE },
   move: { title: 'Move with Intention', tagline: 'Cada gran cambio comienza con una intención. El progreso sucede un movimiento a la vez.', unit_price: 199, image: 'images/design-move.png', shipping: SHIPPING_FEE },
-  calm: { title: 'Strong Body, Calm Mind', tagline: 'El equilibrio entre disciplina, calma y bienestar. Poder en la serenidad.', unit_price: 199, image: 'images/design-calm.png', shipping: SHIPPING_FEE },
+  calm: { title: 'Strong Body, Calm Mind', tagline: 'El equilibrio entre disciplina, calma y bienestar. Poder en la serenidad.', unit_price: 199, image: 'images/design-calm.png', shipping: SHIPPING_FEE, soldOut: true },
   pack4: { title: 'Pack de 4 pares', tagline: 'Los cuatro diseños de la colección First Wave.', unit_price: 716, image: 'images/pack4.png', shipping: 0 }
 };
 
@@ -961,7 +969,7 @@ function renderProducts() {
   Object.entries(products).forEach(([id, p]) => {
     const qty = state.cart[id] || 0;
     const card = document.createElement('div');
-    card.className = 'p-card' + (id === 'pack4' ? ' pack' : '') + (qty > 0 ? ' in-cart' : '');
+    card.className = 'p-card' + (id === 'pack4' ? ' pack' : '') + (qty > 0 ? ' in-cart' : '') + (p.soldOut ? ' sold-out' : '');
     card.innerHTML = `
       <div class="img-wrap"><img src="${p.image}" alt="${p.title}" /></div>
       <div class="p-body">
@@ -975,13 +983,13 @@ function renderProducts() {
             <span class="p-qty-val">${qty} en tu pedido</span>
             <button type="button" class="p-qty-plus" data-id="${id}">+</button>
           </div>
-        ` : `<button class="p-btn" type="button" data-id="${id}">Comprar</button>`}
+        ` : p.soldOut ? `<button class="p-btn" type="button" disabled>Agotado</button>` : `<button class="p-btn" type="button" data-id="${id}">Comprar</button>`}
       </div>
     `;
     if (qty > 0) {
       card.querySelector('.p-qty-minus').onclick = (e) => { e.stopPropagation(); changeQty(id, -1); };
       card.querySelector('.p-qty-plus').onclick = (e) => { e.stopPropagation(); changeQty(id, 1); };
-    } else {
+    } else if (!p.soldOut) {
       card.querySelector('.p-btn').onclick = (e) => { e.stopPropagation(); changeQty(id, 1); };
     }
     grid.appendChild(card);
@@ -989,6 +997,7 @@ function renderProducts() {
 }
 
 function changeQty(id, delta) {
+  if (delta > 0 && products[id].soldOut) return;
   const newQty = (state.cart[id] || 0) + delta;
   if (newQty <= 0) delete state.cart[id];
   else state.cart[id] = newQty;
@@ -1504,7 +1513,7 @@ function initPickCards() {
           <img src="${p.image}" alt="${p.title}" />
           <div class="pcf-name">${p.title}</div>
           <div class="pcf-tag">${p.tagline}</div>
-          <button type="button" data-id="${id}">Comprar</button>
+          ${p.soldOut ? '<button type="button" disabled>Agotado</button>' : `<button type="button" data-id="${id}">Comprar</button>`}
         </div>
       </div>
     `;
@@ -1516,6 +1525,7 @@ function initPickCards() {
     });
     card.querySelector('button').addEventListener('click', (e) => {
       e.stopPropagation();
+      if (p.soldOut) return;
       changeQty(id, 1);
       document.getElementById('checkout').scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
